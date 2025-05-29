@@ -1,0 +1,26 @@
+{
+  "name": "timetable-viewer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "extract": "node build-tools/extract-stops.js"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.3",
+    "fast-xml-parser": "^5.2.3",
+    "glob": "^11.0.2",
+    "sax": "^1.4.1",
+    "vite": "^6.3.5",
+    "xml-flow": "^1.0.4"
+  }
+}
