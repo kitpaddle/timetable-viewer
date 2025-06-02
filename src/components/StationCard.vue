@@ -10,6 +10,7 @@ const { removeStation } = useStations()  // assumes your composable handles this
 const departures = ref([])
 const loading = ref(true)
 const error = ref(null)
+const showAllLines = ref(false)
 
 const hiddenLines = ref(new Set()) // line numbers to hide
 
@@ -42,6 +43,10 @@ function toggleLine(line) {
     }
 }
 
+function toggleLineWrap() {
+    showAllLines.value = !showAllLines.value
+}
+
 function getModeIcon() {
     return iconConfig[props.station.transportMode]?.icon || iconConfig.other.icon
 }
@@ -71,19 +76,26 @@ watch(filteredDepartures, (current) => {
 
 <template>
     <article class="station-card snap">
+
         <header class="card-header">
             <div class="station-info">
                 <component :is="getModeIcon()" class="icon" />
                 <h2>{{ props.station.name }}</h2>
-                <div class="card-controls">
-                    <div class="line-toggles">
-                        <button v-for="line in uniqueLines" :key="line" @click="toggleLine(line)"
-                            :class="{ active: !hiddenLines.has(line) }">
-                            {{ line }}
-                        </button>
-                    </div>
-                </div>
+                <div class="line-toggle-container">
+                    <div class="line-toggle-wrapper" :class="{ expanded: showAllLines }">
+                        <div class="line-toggles">
+                            <button v-for="line in uniqueLines" :key="line" @click="toggleLine(line)"
+                                :class="{ active: !hiddenLines.has(line) }">
+                                {{ line }}
+                            </button>
+                        </div>
 
+                    </div>
+                    <div class="line-toggle-fade" v-if="!showAllLines"></div>
+                    <button class="expand-toggle-btn" v-if="uniqueLines.length > 8" @click="toggleLineWrap">
+                        {{ showAllLines ? '−' : '+' }}
+                    </button>
+                </div>
             </div>
             <button class="close-btn" @click="remove">✕</button>
         </header>
@@ -159,13 +171,21 @@ watch(filteredDepartures, (current) => {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: nowrap;
+    min-width: 0;
+    width: 100%;
 }
 
 .card-header h2 {
+    flex: 1 1 50%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     font-size: 1.1rem;
     margin: 0;
     line-height: 1.2;
     font-weight: 600;
+    min-width: 0;
 }
 
 .close-btn {
@@ -185,24 +205,74 @@ watch(filteredDepartures, (current) => {
 }
 
 .icon {
-    width: 20px;
-    height: 20px;
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
     color: #ccc;
     stroke-width: 2;
 }
 
-.card-controls {
+.line-toggle-container {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    gap: 0.5rem;
+    flex: 0 3 auto;
+    min-width: 0;
+    position: relative;
 }
 
-.line-toggles {
+.line-toggle-wrapper {
     display: flex;
-    gap: 0.25rem;
+    justify-content: flex-end;
+    /* align horizontally to the right */
+    padding-top: 2px;
+    /* align rows from the top (default) */
     flex-wrap: wrap;
+    /* allow wrapping */
+    max-height: 1.8em;
+    /* fits 1 row of buttons */
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    position: relative;    
+}
+
+/* When expanded, allow full height */
+.line-toggle-wrapper.expanded {
+    max-height: 10em;
+    /* enough for 3–4 rows */
+}
+
+/* The fade overlay itself */
+.line-toggle-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1.5em;
+    pointer-events: none;
+    background: linear-gradient(to top, #2b2b2b, rgba(43, 43, 43, 0));
+    z-index: 1;
+}
+
+/* inner button container */
+.line-toggles {
+    display: inline-block;
+    text-align: right;
+}
+
+/* toggle expand/collapse button */
+.expand-toggle-btn {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0px;
+    line-height: 1;
+    align-self: center;
+    transition: color 0.2s;
+}
+
+.expand-toggle-btn:hover {
+    color: #fff;
 }
 
 .line-toggles button {
@@ -210,11 +280,20 @@ watch(filteredDepartures, (current) => {
     color: #ddd;
     border: none;
     border-radius: 4px;
+    margin: 0 0.25rem 0.25rem 0;
+    /* no top/bottom margin */
     padding: 2px 6px;
+    line-height: 1.2;
+    vertical-align: top;
     font-size: 0.8rem;
     cursor: pointer;
     opacity: 0.6;
     transition: all 0.2s;
+}
+
+.line-toggles button:hover {
+    background-color: #3b3b3b;
+        color: #c71616;
 }
 
 .line-toggles button.active {
