@@ -6,43 +6,40 @@ const { stations } = useStations()
 </script>
 
 <template>
-    <main class="container">
-        <h1 class="page-title">My Timetable</h1>
-        <RouterLink to="/map">➕ Add / remove stops on map</RouterLink>
-
-        <section class="grid">
-            <StationCard v-for="s in stations" :key="s.id" :station="s" />
-        </section>
-    </main>
+    <div class="grid-container">
+        <main class="grid">
+            <StationCard v-for="s in stations" :key="s.uid" :station="s" />
+        </main>
+    </div>
 </template>
+  
 
 <style scoped>
-.container {
-    max-width: 64rem;
-    margin-inline: auto;
-    padding: 1rem;
-    font-family: system-ui, sans-serif;
-}
-
-.page-title {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+.grid-container {
+    height: calc(100vh - 34px);
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .grid {
+    height: 100%;
     display: grid;
     gap: 1rem;
+    padding: 1rem;
+    /* ✅ spacing INSIDE the grid */
+    box-sizing: border-box;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scroll-padding-top: 1rem;
+
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, 1fr);
 }
 
-@media(min-width:640px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media(min-width:1024px) {
+@media (min-width: 640px) {
     .grid {
         grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
     }
 }
 </style>

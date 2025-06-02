@@ -8,7 +8,23 @@ watch(stations, s => localStorage.setItem('stations', JSON.stringify(s)), {
 })
 
 export function useStations() {
-    function add(obj) { if (!stations.value.find(s => s.id === obj.id)) stations.value.push(obj) }
-    function remove(id) { stations.value = stations.value.filter(s => s.id !== id) }
-    return { stations, add, remove }
+    function addStation(obj) {
+        stations.value.push({
+            uid: Date.now() + Math.random(),  // ⬅️ unique per instance
+            id: obj.id,
+            name: obj.name,
+            lat: obj.lat,
+            lon: obj.lon,
+            transportMode: obj.transportMode
+        })
+        console.log("Adding Station: ", obj.id)
+        console.log("TransportMode: ", obj.transportMode)
+    }
+    function removeStation(uid) {
+        console.log("Removing station: ", uid)
+        const index = stations.value.findIndex(s => s.uid === uid)
+        if (index !== -1) stations.value.splice(index, 1)
+    }
+      
+    return { stations, addStation, removeStation }
 }
