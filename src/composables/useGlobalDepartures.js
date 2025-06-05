@@ -3,9 +3,6 @@
 
 import { ref } from 'vue'
 
-// composables/useGlobalDepartures.js
-import { ref } from 'vue'
-
 const lastUpdated = ref(null)
 const refreshTrigger = ref(0) // reactive signal
 
