@@ -1,18 +1,27 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { getDepartures } from '../services/timetableApi'
 import { iconConfig } from '../services/iconConfig.js'
 import { useStations } from '../composables/useStations'
+import { useGlobalDepartures } from '../composables/useGlobalDepartures'
 
-const props = defineProps({ station: Object })
+const props = defineProps({ 
+    station: Object,
+    maxRows: {
+        type: Number,
+        default: 10
+    }
+ })
 const { removeStation } = useStations()  // assumes your composable handles this
 
 const departures = ref([])
 const loading = ref(true)
 const error = ref(null)
 const showAllLines = ref(false)
-
+const lineWrapperRef = ref(null)
+const overflowDetected = ref(false)
 const hiddenLines = ref(new Set()) // line numbers to hide
+const { refreshTrigger } = useGlobalDepartures()
 
 // Step 1: Filter by transport mode (before anything else)
 const modeFiltered = computed(() => {
@@ -32,7 +41,7 @@ const uniqueLines = computed(() => {
 const filteredDepartures = computed(() => {
     return modeFiltered.value
         .filter(d => !hiddenLines.value.has(d.line))
-        .slice(0, 10)
+        .slice(0, props.maxRows)
 })
 
 function toggleLine(line) {
@@ -45,6 +54,21 @@ function toggleLine(line) {
 
 function toggleLineWrap() {
     showAllLines.value = !showAllLines.value
+}
+
+function checkOverflow() {
+    nextTick(() => {
+        const el = lineWrapperRef.value
+        if (el) {
+            // Temporarily remove 'expanded' class to check actual overflow
+            const wasExpanded = showAllLines.value
+            if (wasExpanded) el.classList.remove('expanded')
+
+            overflowDetected.value = el.scrollHeight > el.clientHeight
+
+            if (wasExpanded) el.classList.add('expanded')
+        }
+    })
 }
 
 function getModeIcon() {
@@ -62,6 +86,7 @@ onMounted(async () => {
         error.value = e.message
     } finally {
         loading.value = false
+        checkOverflow()
     }
 })
 
@@ -71,6 +96,18 @@ watch(filteredDepartures, (current) => {
     console.log('Filtered tMode values:', [...cats])
 })
 
+watch(uniqueLines, checkOverflow)
+watch(showAllLines, checkOverflow)
+
+watch(refreshTrigger, async () => {
+    try {
+        departures.value = await getDepartures(props.station.id)
+    } catch (e) {
+        error.value = e.message
+    } finally {
+        checkOverflow()
+    }
+})
 
 </script>
 
@@ -82,7 +119,7 @@ watch(filteredDepartures, (current) => {
                 <component :is="getModeIcon()" class="icon" />
                 <h2>{{ props.station.name }}</h2>
                 <div class="line-toggle-container">
-                    <div class="line-toggle-wrapper" :class="{ expanded: showAllLines }">
+                    <div ref="lineWrapperRef" class="line-toggle-wrapper" :class="{ expanded: showAllLines }">
                         <div class="line-toggles">
                             <button v-for="line in uniqueLines" :key="line" @click="toggleLine(line)"
                                 :class="{ active: !hiddenLines.has(line) }">
@@ -91,24 +128,26 @@ watch(filteredDepartures, (current) => {
                         </div>
 
                     </div>
-                    <div class="line-toggle-fade" v-if="!showAllLines"></div>
-                    <button class="expand-toggle-btn" v-if="uniqueLines.length > 8" @click="toggleLineWrap">
-                        {{ showAllLines ? '−' : '+' }}
+                    <div class="line-toggle-fade" v-if="overflowDetected && !showAllLines"></div>
+                    <button class="expand-toggle-btn" v-if="overflowDetected" @click="toggleLineWrap">
+                        {{ showAllLines ? '▲' : '▼' }}
                     </button>
                 </div>
             </div>
             <button class="close-btn" @click="remove">✕</button>
         </header>
+        <div class="list-container">
+            <p v-if="loading">Loading…</p>
+            <p v-else-if="error" style="color:#b00">{{ error }}</p>
 
-        <p v-if="loading">Loading…</p>
-        <p v-else-if="error" style="color:#b00">{{ error }}</p>
-
-        <ul v-else class="departure-list">
-            <li v-for="d in filteredDepartures" :key="d.id">
-                <span>{{ d.line }} → {{ d.destination }}</span>
-                <time class="departure-time" :datetime="d.timeISO">{{ d.time.slice(0, 5) }}</time>
-            </li>
-        </ul>
+            <TransitionGroup name="departure" tag="ul" class="departure-list" v-if="!loading && !error">
+                <li v-for="d in filteredDepartures" :key="d.id" class="departure-row">
+                    <span class="departure-line">{{ d.line }}</span>
+                    <span class="departure-destination">{{ d.destination }}</span>
+                    <time class="departure-time" :datetime="d.timeISO">{{ d.time.slice(0, 5) }}</time>
+                </li>
+            </TransitionGroup>
+        </div>
     </article>
 </template>  
 
@@ -117,19 +156,25 @@ watch(filteredDepartures, (current) => {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  padding: 1rem;
-  border-radius: 8px;
-  background-color: #2b2b2b;
+
   color: #f0f0f0;
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  
+  
 }
 
 .station-card h2 {
     font-size: 1.5rem;
-    margin: 0 0 1rem 0;
     color: #ffffff;
+}
+
+.list-container {
+    padding: 1rem 1rem 1rem 1rem;
+    background-color: #272626;
+    margin: 0;
+    border-radius: 0 0 8px 8px;
+    transition: none; /*max-height 0.3s ease;*/
 }
 
 .departure-list {
@@ -141,19 +186,46 @@ watch(filteredDepartures, (current) => {
     flex-direction: column;
     gap: 0.75rem;
     overflow-y: auto;
+    scrollbar-width: none;
+    overflow-anchor: none;
 }
 
-.departure-list li {
+.departure-list::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.departure-row {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
     font-size: 1rem;
-    padding-bottom: 4px;
     border-bottom: 1px solid #444;
+    padding: 4px 0;
+    gap: 0.5rem;
+}
+
+.departure-line {
+    flex: 0 0 4ch;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    color: #ccc;
+}
+
+.departure-destination {
+    flex: 1 1 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #eee;
 }
 
 .departure-time {
+    flex: 0 0 3.5ch;
+    /* Enough for 5 characters: HH:MM */
     font-family: monospace;
     color: #ddd;
+    text-align: right;
 }
 
 .snap {
@@ -164,7 +236,9 @@ watch(filteredDepartures, (current) => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 8px 8px 0 0;
+    background-color: #2b2b2b;
 }
 
 .station-info {
@@ -194,7 +268,7 @@ watch(filteredDepartures, (current) => {
     color: #aaa;
     font-size: 1.2rem;
     cursor: pointer;
-    padding: 0.25rem;
+    padding: 0.25rem 0.25rem 0.25rem 1.5rem;
     line-height: 1;
     transition: color 0.2s ease;
 }
@@ -214,23 +288,22 @@ watch(filteredDepartures, (current) => {
 
 .line-toggle-container {
     display: flex;
-    flex: 0 3 auto;
+    flex: 0 8 auto;
     min-width: 0;
     position: relative;
 }
 
 .line-toggle-wrapper {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     /* align horizontally to the right */
     padding-top: 2px;
     /* align rows from the top (default) */
     flex-wrap: wrap;
     /* allow wrapping */
-    max-height: 1.8em;
+    max-height: 1.7em;
     /* fits 1 row of buttons */
     overflow: hidden;
-    transition: max-height 0.3s ease;
     position: relative;    
 }
 
@@ -302,6 +375,28 @@ watch(filteredDepartures, (current) => {
     opacity: 1;
 }
 
+/* Departure row enter/leave transition
+.departure-enter-active,
+.departure-leave-active {
+    transition: all 0.3s ease;
+}
+
+.departure-enter-from {
+    opacity: 0;
+}
+
+.departure-enter-to {
+    opacity: 1;
+}
+
+.departure-leave-from {
+    opacity: 1;
+}
+
+.departure-leave-to {
+    opacity: 0;
+}
+    */
 </style>
 
 
