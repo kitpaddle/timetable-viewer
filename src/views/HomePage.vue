@@ -68,11 +68,11 @@ const { currentLimit } = useDepartureLimit()
 
     .few-cards .departure-line,
     .few-cards .departure-time {
-        font-size: 1.1rem;
+        font-size: 1.8rem;
     }
 
     .few-cards .departure-destination {
-        font-size: 1.2rem;
+        font-size: 1.6rem;
     }
 }
 </style>
