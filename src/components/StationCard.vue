@@ -145,8 +145,8 @@ watch(refreshTrigger, async () => {
                     <span class="departure-line">{{ d.line }}</span>
                     <span class="departure-destination">{{ d.destination }}</span>
                     <div class="departure-time-container">
-                        <span v-if="d.isRealtime" class="realtime-time">{{ d.realtimeTime }}</span>
                         <time class="departure-time" :class="{ dimmed: d.isRealtime }" :datetime="d.timeISO">{{ d.time }}</time>
+                        <span v-if="d.isRealtime" class="realtime-time">{{ d.realtimeTime }}</span>
                     </div>
                 </li>
             </TransitionGroup>
@@ -244,7 +244,6 @@ watch(refreshTrigger, async () => {
 
 .departure-time.dimmed {
     color: #777;
-    font-size: 0.85em;
 }
 
 .snap {

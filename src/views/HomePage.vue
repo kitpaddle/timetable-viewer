@@ -10,7 +10,7 @@ const { currentLimit } = useDepartureLimit()
 <template>
     <div class="grid-container">
         <main class="grid-wrapper">
-            <TransitionGroup name="card" tag="div" :class="['card-grid', stations.length <= 2 ? 'few-cards' : '']">
+            <TransitionGroup name="card" tag="div" :class="['card-grid', stations.length <= 2 ? 'few-cards' : stations.length === 3 ? 'three-cards' : '']">
                 <StationCard v-for="s in stations" :key="s.uid" :station="s" :max-rows="currentLimit" />
             </TransitionGroup>
         </main>
@@ -67,12 +67,29 @@ const { currentLimit } = useDepartureLimit()
     }
 
     .few-cards .departure-line,
-    .few-cards .departure-time {
+    .few-cards .departure-time-container {
         font-size: 1.8rem;
     }
 
     .few-cards .departure-destination {
         font-size: 1.6rem;
+    }
+
+    .three-cards .station-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .three-cards .departure-row {
+        font-size: 1.1rem;
+    }
+
+    .three-cards .departure-line,
+    .three-cards .departure-time-container {
+        font-size: 1.3rem;
+    }
+
+    .three-cards .departure-destination {
+        font-size: 1.2rem;
     }
 }
 </style>
