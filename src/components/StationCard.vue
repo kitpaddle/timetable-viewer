@@ -144,7 +144,10 @@ watch(refreshTrigger, async () => {
                 <li v-for="d in filteredDepartures" :key="d.id" class="departure-row">
                     <span class="departure-line">{{ d.line }}</span>
                     <span class="departure-destination">{{ d.destination }}</span>
-                    <time class="departure-time" :datetime="d.timeISO">{{ d.time.slice(0, 5) }}</time>
+                    <div class="departure-time-container">
+                        <span v-if="d.isRealtime" class="realtime-time">{{ d.realtimeTime }}</span>
+                        <time class="departure-time" :class="{ dimmed: d.isRealtime }" :datetime="d.timeISO">{{ d.time }}</time>
+                    </div>
                 </li>
             </TransitionGroup>
         </div>
@@ -220,12 +223,28 @@ watch(refreshTrigger, async () => {
     color: #eee;
 }
 
-.departure-time {
-    flex: 0 0 3.5ch;
-    /* Enough for 5 characters: HH:MM */
+.departure-time-container {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     font-family: monospace;
+}
+
+.realtime-time {
+    font-weight: bold;
+    color: #22d3ee;
+}
+
+.departure-time {
     color: #ddd;
     text-align: right;
+    white-space: nowrap;
+}
+
+.departure-time.dimmed {
+    color: #777;
+    font-size: 0.85em;
 }
 
 .snap {
