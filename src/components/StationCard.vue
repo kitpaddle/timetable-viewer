@@ -250,6 +250,7 @@ watch(refreshTrigger, async () => {
 
 .departure-time.dimmed {
     color: #777;
+    text-decoration: line-through;
 }
 
 .snap {
