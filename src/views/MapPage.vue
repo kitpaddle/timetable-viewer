@@ -7,9 +7,6 @@ import trainSvg from 'lucide-static/icons/train-front.svg?raw'
 import * as L from 'leaflet' // static import at the top
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'   // plugin IIFE runs immediately
 
-import 'leaflet/dist/leaflet.css'
-import 'leaflet.markercluster/dist/MarkerCluster.css'
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { onMounted, onBeforeUnmount } from 'vue'
 import { useStations } from '../composables/useStations'
 
@@ -120,6 +117,10 @@ function renderPopup(stop) {
 </template>
 
 <style>
+@import "https://unpkg.com/leaflet/dist/leaflet.css";
+@import "https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css";
+@import "https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css";
+
 .map-icon {
     width: 30x;
     height: 30px;
