@@ -26,7 +26,7 @@
       <!-- AdSense ad unit goes here once approved -->
     </div>
 
-    <RouterLink to="/privacy" class="privacy-link">Privacy Policy</RouterLink>
+    <RouterLink v-if="isOnMap" to="/privacy" class="privacy-link">Privacy Policy</RouterLink>
 
     <div v-if="showIOSPrompt" class="ios-prompt">
       <span>Install this app: tap <strong>Share</strong> <span class="share-icon">⎙</span> then <strong>Add to Home Screen</strong></span>
@@ -191,12 +191,11 @@ onMounted(() => {
 .privacy-link {
   position: fixed;
   bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0.75rem;
   font-size: 10px;
   color: var(--color-text-faint);
   text-decoration: none;
-  z-index: 10;
+  z-index: 1000;
   white-space: nowrap;
 }
 
