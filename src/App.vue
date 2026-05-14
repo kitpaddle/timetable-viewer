@@ -192,7 +192,7 @@ onMounted(() => {
   position: fixed;
   bottom: 0;
   left: 0;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--color-text-faint);
   text-decoration: none;
   z-index: 1000;
