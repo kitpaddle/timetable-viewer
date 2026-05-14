@@ -197,7 +197,7 @@ onMounted(() => {
   text-decoration: none;
   z-index: 1000;
   white-space: nowrap;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.45);
   padding: 1px 3px;
   border-radius: 3px;
 }
