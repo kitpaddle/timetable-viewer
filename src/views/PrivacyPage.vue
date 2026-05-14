@@ -36,19 +36,19 @@
     max-width: 600px;
     margin: 0 auto;
     padding: 2rem 1.5rem 4rem;
-    color: #e0e0e0;
+    color: var(--color-text);
     line-height: 1.7;
 }
 
 h1 {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
-    color: #fff;
+    color: var(--color-text);
 }
 
 h2 {
     font-size: 1rem;
-    color: #ccc;
+    color: var(--color-text-secondary);
     margin-top: 1.5rem;
     margin-bottom: 0.4rem;
 }
@@ -56,11 +56,11 @@ h2 {
 p {
     margin: 0;
     font-size: 0.95rem;
-    color: #aaa;
+    color: var(--color-text-muted);
 }
 
 a {
-    color: #22d3ee;
+    color: var(--color-realtime);
     text-decoration: none;
 }
 
@@ -72,6 +72,6 @@ a:hover {
     display: inline-block;
     margin-top: 2rem;
     font-size: 0.9rem;
-    color: #888;
+    color: var(--color-text-muted);
 }
 </style>

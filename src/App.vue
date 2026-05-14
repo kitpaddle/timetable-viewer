@@ -6,9 +6,14 @@
         <RouterLink to="/map" class="nav-link" exact-active-class="active">➕ Add Stops</RouterLink>
         <RouterLink to="/" class="nav-link" exact-active-class="active">Timetables</RouterLink>
       </div>
-      <button class="nav-button" @click="cycleLimit">
-        {{ currentLimit }} rows
-      </button>
+      <div class="nav-right">
+        <button class="nav-button theme-btn" @click="toggleTheme" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
+          <component :is="isDark ? SunIcon : MoonIcon" class="theme-icon" />
+        </button>
+        <button class="nav-button" @click="cycleLimit">
+          {{ currentLimit }} rows
+        </button>
+      </div>
     </nav>
 
     <div class="content">
@@ -32,6 +37,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
+import { Sun as SunIcon, Moon as MoonIcon } from 'lucide-vue-next'
 import { useDepartureLimit } from './composables/useDepartureLimit'
 import { useStations } from './composables/useStations'
 import { useGlobalDepartures } from './composables/useGlobalDepartures'
@@ -39,6 +45,19 @@ import { useGlobalDepartures } from './composables/useGlobalDepartures'
 const { cycleLimit, currentLimit } = useDepartureLimit()
 const { lastUpdated, startRefreshTimer } = useGlobalDepartures()
 
+// Theme toggle
+const savedTheme = localStorage.getItem('theme') || 'dark'
+document.documentElement.setAttribute('data-theme', savedTheme)
+const isDark = ref(savedTheme === 'dark')
+
+function toggleTheme() {
+  isDark.value = !isDark.value
+  const theme = isDark.value ? 'dark' : 'light'
+  document.documentElement.setAttribute('data-theme', theme)
+  localStorage.setItem('theme', theme)
+}
+
+// iOS install prompt
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
 const isStandalone = window.navigator.standalone === true
 const showIOSPrompt = ref(isIOS && !isStandalone && !localStorage.getItem('iosPromptDismissed'))
@@ -75,13 +94,13 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 0 0.5rem;
-  background-color: #292929;
+  background-color: var(--color-nav);
   gap: 0.5rem;
 }
 
 .nav-left {
   font-size: 12px;
-  color: #aaa;
+  color: var(--color-text-muted);
   flex: 0 1 auto;
   white-space: nowrap;
   overflow: hidden;
@@ -96,23 +115,30 @@ onMounted(() => {
   justify-content: center;
 }
 
+.nav-right {
+  display: flex;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
 .nav-link {
   text-decoration: none;
-  color: #ccc;
+  color: var(--color-text-secondary);
   font-size: 16px;
   padding: 6px 12px;
   border-radius: 6px;
-  background-color: #353535;
+  background-color: var(--color-nav-link-bg);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .nav-link:hover {
-  background-color: #3b3b3b;
-  color: #fff;
+  background-color: var(--color-nav-link-hover);
+  color: var(--color-text);
 }
 
 .nav-link.active {
-  background-color: #3a4961;
+  background-color: var(--color-active);
   color: #fff;
   font-weight: 600;
 }
@@ -122,15 +148,27 @@ onMounted(() => {
   white-space: nowrap;
   font-size: 14px;
   padding: 4px 10px;
-  background: #444;
-  color: #eee;
+  background: var(--color-btn-bg);
+  color: var(--color-text);
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .nav-button:hover {
-  background: #666;
+  background: var(--color-btn-hover);
+}
+
+.theme-btn {
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-icon {
+  width: 15px;
+  height: 15px;
 }
 
 .privacy-link {
@@ -139,14 +177,14 @@ onMounted(() => {
   left: 50%;
   transform: translateX(-50%);
   font-size: 10px;
-  color: #555;
+  color: var(--color-text-faint);
   text-decoration: none;
   z-index: 10;
   white-space: nowrap;
 }
 
 .privacy-link:hover {
-  color: #888;
+  color: var(--color-text-muted);
 }
 
 .ios-prompt {
@@ -200,11 +238,6 @@ onMounted(() => {
 
 <style>
 body {
-  margin: 0;
-  background-color: #414141;
-  /* dark gray background */
-  color: #f0f0f0;
-  /* light text for contrast */
   font-family: system-ui, sans-serif;
 }
 </style>

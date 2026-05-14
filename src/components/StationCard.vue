@@ -165,25 +165,22 @@ watch(refreshTrigger, async () => {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-
-  color: #f0f0f0;
+  color: var(--color-text);
   display: flex;
   flex-direction: column;
-  
-  
 }
 
 .station-card h2 {
     font-size: 1.5rem;
-    color: #ffffff;
+    color: var(--color-text);
 }
 
 .list-container {
-    padding: 1rem 1rem 1rem 1rem;
-    background-color: #272626;
+    padding: 1rem;
+    background-color: var(--color-surface);
     margin: 0;
     border-radius: 0 0 8px 8px;
-    transition: none; /*max-height 0.3s ease;*/
+    transition: none;
 }
 
 .departure-list {
@@ -200,14 +197,14 @@ watch(refreshTrigger, async () => {
 }
 
 .departure-list::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none;
 }
 
 .departure-row {
     display: flex;
     align-items: center;
     font-size: 1rem;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid var(--color-border);
     padding: 4px 0;
     gap: 0.5rem;
 }
@@ -218,7 +215,7 @@ watch(refreshTrigger, async () => {
     white-space: nowrap;
     text-overflow: ellipsis;
     font-weight: 600;
-    color: #ccc;
+    color: var(--color-text-secondary);
 }
 
 .departure-destination {
@@ -226,7 +223,7 @@ watch(refreshTrigger, async () => {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    color: #eee;
+    color: var(--color-text);
 }
 
 .departure-time-container {
@@ -239,17 +236,17 @@ watch(refreshTrigger, async () => {
 
 .realtime-time {
     font-weight: bold;
-    color: #22d3ee;
+    color: var(--color-realtime);
 }
 
 .departure-time {
-    color: #ddd;
+    color: var(--color-text-secondary);
     text-align: right;
     white-space: nowrap;
 }
 
 .departure-time.dimmed {
-    color: #777;
+    color: var(--color-text-faint);
     text-decoration: line-through;
 }
 
@@ -263,7 +260,7 @@ watch(refreshTrigger, async () => {
     align-items: center;
     padding: 1rem;
     border-radius: 8px 8px 0 0;
-    background-color: #2b2b2b;
+    background-color: var(--color-surface-raised);
 }
 
 .station-info {
@@ -290,7 +287,7 @@ watch(refreshTrigger, async () => {
 .close-btn {
     background: none;
     border: none;
-    color: #aaa;
+    color: var(--color-text-muted);
     font-size: 1.2rem;
     cursor: pointer;
     padding: 0.25rem 0.25rem 0.25rem 1.5rem;
@@ -299,15 +296,14 @@ watch(refreshTrigger, async () => {
 }
 
 .close-btn:hover {
-    color: #f87171;
-    /* soft red on hover */
+    color: var(--color-danger);
 }
 
 .icon {
     flex: 0 0 auto;
     width: 24px;
     height: 24px;
-    color: #ccc;
+    color: var(--color-text-secondary);
     stroke-width: 2;
 }
 
@@ -321,24 +317,17 @@ watch(refreshTrigger, async () => {
 .line-toggle-wrapper {
     display: flex;
     justify-content: flex-start;
-    /* align horizontally to the right */
     padding-top: 2px;
-    /* align rows from the top (default) */
     flex-wrap: wrap;
-    /* allow wrapping */
     max-height: 1.7em;
-    /* fits 1 row of buttons */
     overflow: hidden;
-    position: relative;    
+    position: relative;
 }
 
-/* When expanded, allow full height */
 .line-toggle-wrapper.expanded {
     max-height: 10em;
-    /* enough for 3–4 rows */
 }
 
-/* The fade overlay itself */
 .line-toggle-fade {
     position: absolute;
     bottom: 0;
@@ -346,21 +335,19 @@ watch(refreshTrigger, async () => {
     right: 0;
     height: 1.5em;
     pointer-events: none;
-    background: linear-gradient(to top, #2b2b2b, rgba(43, 43, 43, 0));
+    background: linear-gradient(to top, var(--color-surface-raised), transparent);
     z-index: 1;
 }
 
-/* inner button container */
 .line-toggles {
     display: inline-block;
     text-align: right;
 }
 
-/* toggle expand/collapse button */
 .expand-toggle-btn {
     background: none;
     border: none;
-    color: #888;
+    color: var(--color-text-muted);
     font-size: 1rem;
     cursor: pointer;
     padding: 0px;
@@ -370,16 +357,15 @@ watch(refreshTrigger, async () => {
 }
 
 .expand-toggle-btn:hover {
-    color: #fff;
+    color: var(--color-text);
 }
 
 .line-toggles button {
-    background: #555;
-    color: #ddd;
+    background: var(--color-line-toggle-bg);
+    color: var(--color-text-secondary);
     border: none;
     border-radius: 4px;
     margin: 0 0.25rem 0.25rem 0;
-    /* no top/bottom margin */
     padding: 2px 6px;
     line-height: 1.2;
     vertical-align: top;
@@ -390,12 +376,12 @@ watch(refreshTrigger, async () => {
 }
 
 .line-toggles button:hover {
-    background-color: #3b3b3b;
-        color: #c71616;
+    background-color: var(--color-nav-link-hover);
+    color: var(--color-danger);
 }
 
 .line-toggles button.active {
-    background: #3a4961;
+    background: var(--color-active);
     color: white;
     opacity: 1;
 }
