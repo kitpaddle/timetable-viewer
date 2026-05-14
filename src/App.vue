@@ -19,6 +19,8 @@
       <!-- AdSense ad unit goes here once approved -->
     </div>
 
+    <RouterLink to="/privacy" class="privacy-link">Privacy Policy</RouterLink>
+
     <div v-if="showIOSPrompt" class="ios-prompt">
       <span>Install this app: tap <strong>Share</strong> <span class="share-icon">⎙</span> then <strong>Add to Home Screen</strong></span>
       <button class="ios-prompt-close" @click="dismissIOSPrompt">✕</button>
@@ -129,6 +131,22 @@ onMounted(() => {
 
 .nav-button:hover {
   background: #666;
+}
+
+.privacy-link {
+  position: fixed;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #555;
+  text-decoration: none;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.privacy-link:hover {
+  color: #888;
 }
 
 .ios-prompt {
