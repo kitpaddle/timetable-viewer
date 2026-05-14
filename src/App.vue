@@ -197,6 +197,9 @@ onMounted(() => {
   text-decoration: none;
   z-index: 1000;
   white-space: nowrap;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2px 5px;
+  border-radius: 3px;
 }
 
 .privacy-link:hover {

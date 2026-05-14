@@ -27,7 +27,7 @@
             No personal data is sent in these requests.
         </p>
 
-        <RouterLink to="/" class="back">← Back</RouterLink>
+        <RouterLink to="/map" class="back">← Back</RouterLink>
     </div>
 </template>
 
