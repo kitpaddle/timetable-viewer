@@ -113,7 +113,7 @@ function renderPopup(stop) {
 </script>
 
 <template>
-    <div style="height:calc(100vh - 34px)" id="map"></div>
+    <div style="height:100%" id="map"></div>
 </template>
 
 <style>

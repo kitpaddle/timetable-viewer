@@ -20,7 +20,7 @@ const { currentLimit } = useDepartureLimit()
 
 <style>
 .grid-container {
-    height: calc(100vh - 34px);
+    height: 100%;
     overflow: hidden;
     box-sizing: border-box;
 }
@@ -41,8 +41,15 @@ const { currentLimit } = useDepartureLimit()
     gap: 1rem;
     width: 100%;
     margin: 0 auto;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     max-width: calc(100vw - 2rem);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    align-content: start;
+}
+
+@media (min-width: 600px) {
+    .card-grid {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    }
 }
 
 .card-leave-active {

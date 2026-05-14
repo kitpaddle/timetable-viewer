@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app-layout">
     <nav class="nav">
       <div class="nav-left">Last updated at {{ lastUpdated }}</div>
       <div class="nav-center">
@@ -11,7 +11,13 @@
       </button>
     </nav>
 
-    <RouterView />
+    <div class="content">
+      <RouterView />
+    </div>
+
+    <div class="ad-slot">
+      <!-- AdSense ad unit goes here once approved -->
+    </div>
   </div>
 </template>
 
@@ -33,29 +39,46 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.ad-slot {
+  display: none; /* unhide and paste AdSense <ins> tag inside when approved */
+}
+
 .nav {
   height: 34px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0 0.3rem;
+  padding: 0 0.5rem;
   background-color: #292929;
-  position: relative;
+  gap: 0.5rem;
 }
 
 .nav-left {
-  position: absolute;
-  left: 0.5rem;
   font-size: 12px;
   color: #aaa;
+  flex: 0 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .nav-center {
   display: flex;
   gap: 1.5rem;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  flex: 1;
+  justify-content: center;
 }
 
 .nav-link {
@@ -80,7 +103,8 @@ onMounted(() => {
 }
 
 .nav-button {
-  margin-left: auto;
+  flex: 0 0 auto;
+  white-space: nowrap;
   font-size: 14px;
   padding: 4px 10px;
   background: #444;
@@ -92,6 +116,21 @@ onMounted(() => {
 
 .nav-button:hover {
   background: #666;
+}
+
+@media (max-width: 600px) {
+  .nav-left {
+    white-space: normal;
+    font-size: 9px;
+    line-height: 1.2;
+    flex: 0 0 auto;
+    max-width: 60px;
+  }
+
+  .nav-link {
+    font-size: 14px;
+    padding: 4px 8px;
+  }
 }
 </style>
 
