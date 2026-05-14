@@ -18,20 +18,33 @@
     <div class="ad-slot">
       <!-- AdSense ad unit goes here once approved -->
     </div>
+
+    <div v-if="showIOSPrompt" class="ios-prompt">
+      <span>Install this app: tap <strong>Share</strong> <span class="share-icon">⎙</span> then <strong>Add to Home Screen</strong></span>
+      <button class="ios-prompt-close" @click="dismissIOSPrompt">✕</button>
+    </div>
   </div>
 </template>
 
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import { useDepartureLimit } from './composables/useDepartureLimit'
 import { useStations } from './composables/useStations'
 import { useGlobalDepartures } from './composables/useGlobalDepartures'
 
 const { cycleLimit, currentLimit } = useDepartureLimit()
-
 const { lastUpdated, startRefreshTimer } = useGlobalDepartures()
+
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
+const isStandalone = window.navigator.standalone === true
+const showIOSPrompt = ref(isIOS && !isStandalone && !localStorage.getItem('iosPromptDismissed'))
+
+function dismissIOSPrompt() {
+  showIOSPrompt.value = false
+  localStorage.setItem('iosPromptDismissed', '1')
+}
 
 onMounted(() => {
   startRefreshTimer()
@@ -116,6 +129,39 @@ onMounted(() => {
 
 .nav-button:hover {
   background: #666;
+}
+
+.ios-prompt {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  background: #1e293b;
+  color: #f0f0f0;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+.share-icon {
+  font-size: 16px;
+}
+
+.ios-prompt-close {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 @media (max-width: 600px) {
