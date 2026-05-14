@@ -3,8 +3,10 @@
     <nav class="nav">
       <div class="nav-left">Last updated at {{ lastUpdated }}</div>
       <div class="nav-center">
-        <RouterLink to="/map" class="nav-link" exact-active-class="active">➕ Add Stops</RouterLink>
-        <RouterLink to="/" class="nav-link" exact-active-class="active">Timetables</RouterLink>
+        <button class="nav-link nav-toggle" @click="toggleView">
+          <component v-if="isOnMap" :is="ClockIcon" class="toggle-icon" />
+          <span>{{ isOnMap ? 'View Times' : '➕ Add Stops' }}</span>
+        </button>
       </div>
       <div class="nav-right">
         <button class="nav-button theme-btn" @click="toggleTheme" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
@@ -35,15 +37,22 @@
 
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
-import { Sun as SunIcon, Moon as MoonIcon } from 'lucide-vue-next'
+import { ref, computed, onMounted } from 'vue'
+import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
+import { Sun as SunIcon, Moon as MoonIcon, Clock as ClockIcon } from 'lucide-vue-next'
 import { useDepartureLimit } from './composables/useDepartureLimit'
 import { useStations } from './composables/useStations'
 import { useGlobalDepartures } from './composables/useGlobalDepartures'
 
 const { cycleLimit, currentLimit } = useDepartureLimit()
 const { lastUpdated, startRefreshTimer } = useGlobalDepartures()
+
+const route = useRoute()
+const router = useRouter()
+const isOnMap = computed(() => route.path === '/map')
+function toggleView() {
+  router.push(isOnMap.value ? '/' : '/map')
+}
 
 // Theme toggle
 const savedTheme = localStorage.getItem('theme') || 'dark'
@@ -137,10 +146,18 @@ onMounted(() => {
   color: var(--color-text);
 }
 
-.nav-link.active {
-  background-color: var(--color-active);
-  color: #fff;
-  font-weight: 600;
+.nav-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: none;
+  cursor: pointer;
+}
+
+.toggle-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .nav-button {
