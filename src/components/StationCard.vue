@@ -20,7 +20,13 @@ const error = ref(null)
 const showAllLines = ref(false)
 const lineWrapperRef = ref(null)
 const overflowDetected = ref(false)
-const hiddenLines = ref(new Set()) // line numbers to hide
+
+const HIDDEN_LINES_KEY = `hiddenLines_${props.station.id}`
+const hiddenLines = ref(new Set(JSON.parse(localStorage.getItem(HIDDEN_LINES_KEY) || '[]')))
+
+watch(hiddenLines, val => {
+    localStorage.setItem(HIDDEN_LINES_KEY, JSON.stringify([...val]))
+}, { deep: true })
 const { refreshTrigger } = useGlobalDepartures()
 
 // Step 1: Filter by transport mode (before anything else)
