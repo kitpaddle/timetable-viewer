@@ -1,0 +1,18 @@
+{
+  "name": "Timetable Viewer",
+  "short_name": "Timetable",
+  "description": "Real-time public transport departure boards",
+  "start_url": "/timetable-viewer/",
+  "scope": "/timetable-viewer/",
+  "display": "standalone",
+  "background_color": "#1e1e1e",
+  "theme_color": "#292929",
+  "icons": [
+    {
+      "src": "/timetable-viewer/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

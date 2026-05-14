@@ -2,13 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Timetable App</title>
+    <title>Timetable Viewer</title>
+
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="theme-color" content="#292929" />
+
+    <!-- iOS PWA support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Timetable" />
+    <link rel="apple-touch-icon" href="./favicon.svg" />
     <script type="module" crossorigin src="/timetable-viewer/assets/index-AjS4J3lo.js"></script>
     <link rel="stylesheet" crossorigin href="/timetable-viewer/assets/index-Bj09RH29.css">
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app"></div>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/timetable-viewer/sw.js')
+      }
+    </script>
   </body>
 </html>
