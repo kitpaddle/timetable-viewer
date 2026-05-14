@@ -193,7 +193,7 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   font-size: 11px;
-  color: var(--color-text-faint);
+  color: var(--color-text-muted);
   text-decoration: none;
   z-index: 1000;
   white-space: nowrap;
@@ -203,7 +203,7 @@ onMounted(() => {
 }
 
 .privacy-link:hover {
-  color: var(--color-text-muted);
+  color: var(--color-text);
 }
 
 .ios-prompt {
