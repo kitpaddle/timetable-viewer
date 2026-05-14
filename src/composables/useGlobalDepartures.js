@@ -1,26 +1,33 @@
 
-// This is to refresh the departure data globally every 20mins
+// Refreshes departure data every 20 minutes and immediately when the tab becomes visible again
 
 import { ref } from 'vue'
 
 const lastUpdated = ref(null)
-const refreshTrigger = ref(0) // reactive signal
+const refreshTrigger = ref(0)
 
 export function useGlobalDepartures() {
     const REFRESH_INTERVAL = 1000 * 60 * 20 // 20 minutes
 
     function updateTimestamp() {
         const now = new Date()
-        lastUpdated.value = now.toTimeString().slice(0, 5) // "HH:MM"
+        lastUpdated.value = now.toTimeString().slice(0, 5)
+    }
+
+    function triggerRefresh() {
+        refreshTrigger.value++
+        updateTimestamp()
     }
 
     function startRefreshTimer() {
-        updateTimestamp()
-        refreshTrigger.value++ // signal refresh
-        setInterval(() => {
-            refreshTrigger.value++
-            updateTimestamp()
-        }, REFRESH_INTERVAL)
+        triggerRefresh()
+        setInterval(triggerRefresh, REFRESH_INTERVAL)
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                triggerRefresh()
+            }
+        })
     }
 
     return {
