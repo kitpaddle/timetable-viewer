@@ -190,8 +190,8 @@ onMounted(() => {
 
 .privacy-link {
   position: fixed;
-  bottom: 6px;
-  left: 0.75rem;
+  bottom: 0;
+  left: 0;
   font-size: 10px;
   color: var(--color-text-faint);
   text-decoration: none;
