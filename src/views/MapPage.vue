@@ -22,6 +22,7 @@ import { iconConfig } from '../services/iconConfig.js'
 const { addStation } = useStations()
 
 let map
+let cancelled = false
 const locateState = ref('idle') // 'idle' | 'locating' | 'error'
 const stopsLoading = ref(true)
 const { t } = useLang()
@@ -44,6 +45,7 @@ onMounted(async () => {
     map.on('locationerror', () => { locateState.value = 'error'; setTimeout(() => locateState.value = 'idle', 3000) })
 
     onBeforeUnmount(() => {
+        cancelled = true
         const center = map.getCenter()
         const zoom = map.getZoom()
         localStorage.setItem(MAP_STATE_KEY, JSON.stringify({
@@ -84,10 +86,11 @@ onMounted(async () => {
     // Build markers in chunks so the browser can paint tiles between batches
     const cluster = L.markerClusterGroup()
     const stops = stationCache.stopCache
-    const CHUNK = 5000
+    const CHUNK = 1500
     let i = 0
 
     function addChunk() {
+        if (cancelled) return
         const end = Math.min(i + CHUNK, stops.length)
         for (; i < end; i++) {
             const s = stops[i]
@@ -100,8 +103,10 @@ onMounted(async () => {
         if (i < stops.length) {
             setTimeout(addChunk, 0)
         } else {
-            map.addLayer(cluster)
-            stopsLoading.value = false
+            if (!cancelled) {
+                map.addLayer(cluster)
+                stopsLoading.value = false
+            }
         }
     }
     setTimeout(addChunk, 0)
