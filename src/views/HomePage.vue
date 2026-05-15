@@ -17,7 +17,7 @@ const { currentLimit } = useDepartureLimit()
                 </p>
                 <p class="welcome-sv">
                     Se tidtabeller och realtidsavgångar för valfria hållplatser i Sverige.
-                    Tryck på <strong>Lägg till hållplatser</strong> för att välja vilka hållplatser och stationer du vill se avgångstider för.
+                    Tryck på <strong>Add Stops</strong> för att välja vilka hållplatser och stationer du vill se avgångstider för.
                 </p>
             </div>
             <TransitionGroup v-else name="card" tag="div" :class="['card-grid', stations.length <= 2 ? 'few-cards' : stations.length === 3 ? 'three-cards' : '']">
