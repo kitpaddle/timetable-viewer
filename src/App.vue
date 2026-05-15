@@ -99,12 +99,12 @@ onMounted(() => {
 }
 
 .nav {
+  position: relative;
   height: 34px;
   display: flex;
   align-items: center;
   padding: 0 0.5rem;
   background-color: var(--color-nav);
-  gap: 0.5rem;
 }
 
 .nav-left {
@@ -118,10 +118,10 @@ onMounted(() => {
 }
 
 .nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: 1.5rem;
-  flex: 1;
-  justify-content: center;
 }
 
 .nav-right {
@@ -129,6 +129,7 @@ onMounted(() => {
   gap: 0.4rem;
   flex: 0 0 auto;
   align-items: center;
+  margin-left: auto;
 }
 
 .nav-link {
