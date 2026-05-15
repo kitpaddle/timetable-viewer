@@ -70,32 +70,26 @@ onMounted(async () => {
         }
     })
 
-    // Use cache cluster data if available
-    if (stationCache.stopCache && stationCache.clusterCache) {
-        console.log("Using Cached cluster")
-        map.addLayer(stationCache.clusterCache)
-        return
+    // Fetch stops once, cache the data — but always build a fresh cluster for this map instance
+    if (!stationCache.stopCache) {
+        const stops = await fetch(`${import.meta.env.BASE_URL}stops.min2.json`)
+            .then(r => {
+                if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
+                return r.json()
+            })
+        stationCache.stopCache = stops
     }
 
-    // Lazy-load the JSON
-    const stops = await fetch(`${import.meta.env.BASE_URL}stops.min2.json`)
-        .then(r => {
-            if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
-            return r.json()
-        })
-    stationCache.stopCache = stops
-    
     const cluster = L.markerClusterGroup()
-    stops.forEach(s => {
+    stationCache.stopCache.forEach(s => {
         const { svg, color, bg } = iconConfig[s.transportMode] || iconConfig.other
         const m = L.marker([s.lat, s.lon], {
             icon: makeIcon(svg, color, bg)
         })
         m.bindPopup(renderPopup(s))
-        m._stop = s // Attaching the object itself to each marker
+        m._stop = s
         cluster.addLayer(m)
     })
-    stationCache.clusterCache = cluster
     map.addLayer(cluster)
 
 })

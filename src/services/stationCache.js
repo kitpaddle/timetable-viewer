@@ -1,6 +1,6 @@
-// This is so the cache of the map data and clusters is saved and used globally so it doesn't reload each time the page is loaded.
+// Caches raw stops JSON globally to avoid re-fetching on map revisit.
+// Cluster is always rebuilt fresh per map instance to avoid stale Leaflet state.
 export const stationCache = {
-    stopCache: null,
-    clusterCache: null
+    stopCache: null
 }
   
