@@ -15,8 +15,12 @@ if (!fs.existsSync(SRC)) {
 
 const parser = sax.createStream(true);
 const src = fs.createReadStream(SRC);
+const out = fs.createWriteStream(DEST);
 
-const stops = new Map(); // keyed by rikshallplats ID — deduplicates automatically
+out.write('[');
+
+let firstRecord = true;
+let total = 0;
 
 let inStop = false;
 let stop = null;
@@ -70,8 +74,11 @@ parser.on('text', txt => {
 parser.on('closetag', tag => {
     if (tag === 'StopPlace') {
         inStop = false;
-        if (stop && stop.id && stop.lat && stop.lon) {
-            stops.set(stop.id, stop);
+        if (stop.id && stop.lat && stop.lon) {
+            if (!firstRecord) out.write(',');
+            firstRecord = false;
+            out.write(JSON.stringify(stop));
+            total++;
         }
         stop = null;
     }
@@ -79,10 +86,8 @@ parser.on('closetag', tag => {
 });
 
 parser.on('end', () => {
-    const out = fs.createWriteStream(DEST);
-    out.write(JSON.stringify([...stops.values()]));
-    out.end();
-    console.log(`✅  Extracted ${stops.size} stops → ${path.basename(DEST)}`);
+    out.end(']');
+    console.log(`✅  Extracted ${total} stops → ${path.basename(DEST)}`);
 });
 
 parser.on('error', err => {
