@@ -178,15 +178,16 @@ function renderPopup(stop) {
 
 .map-loading {
     position: absolute;
-    bottom: 16px;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     z-index: 1000;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.65);
     color: #fff;
-    font-size: 13px;
-    padding: 5px 12px;
-    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 12px 24px;
+    border-radius: 12px;
     pointer-events: none;
     white-space: nowrap;
 }
