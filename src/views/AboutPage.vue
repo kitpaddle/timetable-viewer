@@ -1,6 +1,12 @@
 <script setup>
-import stopsMeta from '/stops-meta.json'
-const stopCount = stopsMeta.count.toLocaleString('sv-SE')
+import { ref, onMounted } from 'vue'
+const stopCount = ref('69 000')
+onMounted(async () => {
+    try {
+        const meta = await fetch('/stops-meta.json').then(r => r.json())
+        stopCount.value = meta.count.toLocaleString('sv-SE')
+    } catch {}
+})
 </script>
 
 <template>
