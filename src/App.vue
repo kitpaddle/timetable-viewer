@@ -253,6 +253,13 @@ onMounted(() => {
     font-size: 14px;
     padding: 4px 8px;
   }
+
+  .nav-center {
+    position: static;
+    transform: none;
+    flex: 1;
+    justify-content: center;
+  }
 }
 </style>
 
