@@ -15,7 +15,7 @@
         <button class="nav-button theme-btn" @click="toggleTheme" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
           <component :is="isDark ? SunIcon : MoonIcon" class="theme-icon" />
         </button>
-        <button class="nav-button theme-btn" @click="toggleLang" :title="lang === 'sv' ? 'Switch to English' : 'Byt till svenska'">
+        <button class="nav-button theme-btn lang-btn" @click="toggleLang" :title="lang === 'sv' ? 'Switch to English' : 'Byt till svenska'">
           {{ otherFlag }}
         </button>
         <button class="nav-button" @click="cycleLimit">
@@ -192,6 +192,11 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.lang-btn {
+  font-size: 12px;
+  line-height: 1;
 }
 
 
