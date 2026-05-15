@@ -7,7 +7,7 @@ import trainSvg from 'lucide-static/icons/train-front.svg?raw'
 import * as L from 'leaflet' // static import at the top
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'   // plugin IIFE runs immediately
 
-import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
 import { useLang } from '../composables/useLang'
 import { useStations } from '../composables/useStations'
 
@@ -36,6 +36,8 @@ onMounted(async () => {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map)
+
+    nextTick(() => map.invalidateSize())
 
     map.on('locationfound', () => { locateState.value = 'idle' })
     map.on('locationerror', () => { locateState.value = 'error'; setTimeout(() => locateState.value = 'idle', 3000) })
