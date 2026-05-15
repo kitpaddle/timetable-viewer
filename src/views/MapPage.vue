@@ -8,6 +8,7 @@ import * as L from 'leaflet' // static import at the top
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'   // plugin IIFE runs immediately
 
 import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { useLang } from '../composables/useLang'
 import { useStations } from '../composables/useStations'
 
 // Import global Cache
@@ -22,6 +23,7 @@ const { addStation } = useStations()
 
 let map
 const locateState = ref('idle') // 'idle' | 'locating' | 'error'
+const { t } = useLang()
 const MAP_STATE_KEY = 'leafletMapState' //Save location and zoom locally
 const saved = JSON.parse(localStorage.getItem(MAP_STATE_KEY) || '{}')
 const initialCenter = saved.center || [63.0, 16.5]
@@ -130,9 +132,9 @@ function renderPopup(stop) {
             @click="locateMe"
             :disabled="locateState === 'locating'"
         >
-            <span v-if="locateState === 'idle'">📍 Locate me</span>
-            <span v-else-if="locateState === 'locating'">Locating…</span>
-            <span v-else>Location unavailable</span>
+            <span v-if="locateState === 'idle'">📍 {{ t('locateMe') }}</span>
+            <span v-else-if="locateState === 'locating'">{{ t('locating') }}</span>
+            <span v-else>{{ t('locationErr') }}</span>
         </button>
     </div>
 </template>

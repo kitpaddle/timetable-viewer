@@ -4,19 +4,22 @@
       <RouterLink to="/about" class="info-btn" title="About">
         <InfoIcon class="info-icon" />
       </RouterLink>
-      <div class="nav-left">Last updated at {{ lastUpdated }}</div>
+      <div class="nav-left">{{ t('updatedAt') }} {{ lastUpdated }}</div>
       <div class="nav-center">
         <button class="nav-link nav-toggle" @click="toggleView">
           <component v-if="isOnMap" :is="ClockIcon" class="toggle-icon" />
-          <span>{{ isOnMap ? 'View Times' : '➕ Add Stops' }}</span>
+          <span>{{ isOnMap ? t('viewTimes') : '➕ ' + t('addStops') }}</span>
         </button>
       </div>
       <div class="nav-right">
         <button class="nav-button theme-btn" @click="toggleTheme" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
           <component :is="isDark ? SunIcon : MoonIcon" class="theme-icon" />
         </button>
+        <button class="nav-button lang-btn" @click="toggleLang" :title="lang === 'sv' ? 'Switch to English' : 'Byt till svenska'">
+          {{ otherFlag }}
+        </button>
         <button class="nav-button" @click="cycleLimit">
-          {{ currentLimit }} rows
+          {{ currentLimit }} {{ lang === 'sv' ? 'rader' : 'rows' }}
         </button>
       </div>
     </nav>
@@ -43,11 +46,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { Sun as SunIcon, Moon as MoonIcon, Clock as ClockIcon, Info as InfoIcon } from 'lucide-vue-next'
+import { useLang } from './composables/useLang'
 import { useDepartureLimit } from './composables/useDepartureLimit'
 import { useStations } from './composables/useStations'
 import { useGlobalDepartures } from './composables/useGlobalDepartures'
 
 const { cycleLimit, currentLimit } = useDepartureLimit()
+const { lang, otherFlag, toggleLang, t } = useLang()
 const { lastUpdated, startRefreshTimer } = useGlobalDepartures()
 
 const route = useRoute()
@@ -203,6 +208,12 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.lang-btn {
+  font-size: 16px;
+  padding: 2px 5px;
+  line-height: 1;
 }
 
 .theme-icon {

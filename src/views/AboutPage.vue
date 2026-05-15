@@ -1,83 +1,72 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-const stopCount = ref('69 000')
+import { ref, onMounted, computed } from 'vue'
+import { useLang } from '../composables/useLang'
+
+defineProps({ showBack: { type: Boolean, default: true } })
+
+const { lang } = useLang()
+const stopCount = ref('69 000')
+
 onMounted(async () => {
     try {
         const meta = await fetch('/stops-meta.json').then(r => r.json())
-        stopCount.value = meta.count.toLocaleString('sv-SE')
+        stopCount.value = meta.count.toLocaleString(lang.value === 'sv' ? 'sv-SE' : 'en-GB')
     } catch {}
+})
+
+const content = computed(() => lang.value === 'sv' ? {
+    title: 'Om Avgångar.se',
+    intro: 'Gratis app för realtidsavgångar och tidtabeller för kollektivtrafik i Sverige. Inget konto behövs.',
+    privacyLink: 'Vi sparar ingen persondata.',
+    back: '← Tillbaka',
+    tiles: [
+        { icon: '🗺️', title: `${stopCount.value} hållplatser`, text: 'Bussar, tåg, tunnelbana, spårvagn och färjor i hela Sverige.' },
+        { icon: '💾', title: 'Dina val sparas', text: 'Valda hållplatser och inställningar lagras lokalt i webbläsaren.' },
+        { icon: '🔄', title: 'Automatisk uppdatering', text: 'Uppdateras var 20:e minut — perfekt för större skärmar och magic mirrors.' },
+        { icon: '📡', title: 'Realtidsdata', text: 'Officiell data från Trafiklab. Realtid visas i blått när det finns.' },
+        { icon: '🌙', title: 'Ljust / mörkt läge', text: 'Växla med sol/måne-knappen uppe till höger.' },
+        { icon: '🔢', title: 'Rader-knappen', text: 'Styr hur många avgångar som visas per hållplats.' },
+        { icon: '📍', title: 'Lägg till hållplatser', text: 'Tryck på "Hållplatser" för att öppna kartan och hitta hållplatser nära dig.' },
+        { icon: '✕', title: 'Ta bort hållplatser', text: 'Tryck på ✕ i hörnet på ett avgångskort för att ta bort det.' },
+    ]
+} : {
+    title: 'About Avgångar.se',
+    intro: 'Free app for real-time departures and timetables for public transport across Sweden. No account needed.',
+    privacyLink: 'We store no personal data.',
+    back: '← Back',
+    tiles: [
+        { icon: '🗺️', title: `${stopCount.value} stops`, text: 'Buses, trains, metro, trams and ferries across Sweden.' },
+        { icon: '💾', title: 'Your choices are saved', text: 'Chosen stops and settings are stored locally in your browser.' },
+        { icon: '🔄', title: 'Auto-refresh', text: 'Refreshes every 20 minutes — great for larger screens and magic mirrors.' },
+        { icon: '📡', title: 'Real-time data', text: 'Official data from Trafiklab. Real-time shown in blue when available.' },
+        { icon: '🌙', title: 'Light / dark mode', text: 'Toggle with the sun/moon button in the top right.' },
+        { icon: '🔢', title: 'Rows button', text: 'Controls how many departures to show per stop.' },
+        { icon: '📍', title: 'Add stops', text: 'Tap "Add Stops" to open the map and find stops near you.' },
+        { icon: '✕', title: 'Remove stops', text: 'Tap ✕ on a departure card to remove that stop.' },
+    ]
 })
 </script>
 
 <template>
     <div class="about">
-        <h1>Om Avgångar.se</h1>
+        <h1>{{ content.title }}</h1>
 
         <p class="intro">
-            Gratis app för realtidsavgångar och tidtabeller för kollektivtrafik i Sverige.
-            Inget konto behövs. <RouterLink to="/privacy">Vi sparar ingen persondata.</RouterLink>
+            {{ content.intro }}
+            <RouterLink to="/privacy">{{ content.privacyLink }}</RouterLink>
         </p>
 
         <div class="tiles">
-            <div class="tile">
-                <span class="tile-icon">🗺️</span>
+            <div class="tile" v-for="tile in content.tiles" :key="tile.title">
+                <span class="tile-icon">{{ tile.icon }}</span>
                 <div>
-                    <strong>{{ stopCount }} hållplatser</strong>
-                    <span>Bussar, tåg, tunnelbana, spårvagn och färjor i hela Sverige.</span>
-                </div>
-            </div>
-            <div class="tile">
-                <span class="tile-icon">💾</span>
-                <div>
-                    <strong>Dina val sparas</strong>
-                    <span>Valda hållplatser och inställningar lagras lokalt i webbläsaren.</span>
-                </div>
-            </div>
-            <div class="tile">
-                <span class="tile-icon">🔄</span>
-                <div>
-                    <strong>Automatisk uppdatering</strong>
-                    <span>Sidan uppdateras var 20:e minut — perfekt för större skärmar och magic mirrors.</span>
-                </div>
-            </div>
-            <div class="tile">
-                <span class="tile-icon">📡</span>
-                <div>
-                    <strong>Realtidsdata</strong>
-                    <span>Officiell data från <a href="https://www.trafiklab.se" target="_blank" rel="noopener">Trafiklab</a>. Realtid visas i blått när det finns.</span>
-                </div>
-            </div>
-            <div class="tile">
-                <span class="tile-icon">🌙</span>
-                <div>
-                    <strong>Ljust / mörkt läge</strong>
-                    <span>Växla med sol/måne-knappen uppe till höger.</span>
-                </div>
-            </div>
-            <div class="tile">
-                <span class="tile-icon">🔢</span>
-                <div>
-                    <strong>Rader-knappen</strong>
-                    <span>Styr hur många avgångar som visas per hållplats.</span>
-                </div>
-            </div>
-            <div class="tile">
-                <span class="tile-icon">📍</span>
-                <div>
-                    <strong>Lägg till hållplatser</strong>
-                    <span>Tryck på "Add Stops" för att öppna kartan och hitta hållplatser nära dig.</span>
-                </div>
-            </div>
-            <div class="tile">
-                <span class="tile-icon">✕</span>
-                <div>
-                    <strong>Ta bort hållplatser</strong>
-                    <span>Tryck på ✕ i hörnet på ett avgångskort för att ta bort det.</span>
+                    <strong>{{ tile.title }}</strong>
+                    <span>{{ tile.text }}</span>
                 </div>
             </div>
         </div>
 
-        <RouterLink to="/" class="back">← Tillbaka</RouterLink>
+        <RouterLink v-if="showBack" to="/" class="back">{{ content.back }}</RouterLink>
     </div>
 </template>
 
@@ -105,6 +94,7 @@ h1 {
 .intro a {
     color: var(--color-realtime);
     text-decoration: none;
+    margin-left: 0.2rem;
 }
 
 .tiles {
@@ -143,11 +133,6 @@ h1 {
     font-size: 0.75rem;
     color: var(--color-text-muted);
     line-height: 1.4;
-}
-
-.tile a {
-    color: var(--color-realtime);
-    text-decoration: none;
 }
 
 .back {

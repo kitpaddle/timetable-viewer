@@ -2,6 +2,7 @@
 import { useStations } from '../composables/useStations'
 import StationCard from '../components/StationCard.vue'
 import { useDepartureLimit } from '../composables/useDepartureLimit'
+import AboutPage from './AboutPage.vue'
 
 const { stations } = useStations()
 const { currentLimit } = useDepartureLimit()
@@ -10,16 +11,7 @@ const { currentLimit } = useDepartureLimit()
 <template>
     <div class="grid-container">
         <main class="grid-wrapper">
-            <div v-if="stations.length === 0" class="welcome">
-                <p class="welcome-en">
-                    See scheduled and real-time departures for the stops of your choosing in Sweden.
-                    Tap <strong>Add Stops</strong> to choose which stops &amp; stations you wish to see departure times for.
-                </p>
-                <p class="welcome-sv">
-                    Se tidtabeller och realtidsavgångar för valfria hållplatser i Sverige.
-                    Tryck på <strong>Add Stops</strong> för att välja vilka hållplatser och stationer du vill se avgångstider för.
-                </p>
-            </div>
+            <AboutPage v-if="stations.length === 0" :show-back="false" />
             <TransitionGroup v-else name="card" tag="div" :class="['card-grid', stations.length <= 2 ? 'few-cards' : stations.length === 3 ? 'three-cards' : '']">
                 <StationCard v-for="s in stations" :key="s.uid" :station="s" :max-rows="currentLimit" />
             </TransitionGroup>
@@ -110,26 +102,4 @@ const { currentLimit } = useDepartureLimit()
     }
 }
 
-.welcome {
-    max-width: 480px;
-    margin: 3rem auto;
-    padding: 0 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.welcome-en {
-    color: var(--color-text);
-    font-size: 1rem;
-    line-height: 1.7;
-    margin: 0;
-}
-
-.welcome-sv {
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-    line-height: 1.7;
-    margin: 0;
-}
 </style>
