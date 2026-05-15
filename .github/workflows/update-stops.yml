@@ -1,0 +1,61 @@
+name: Update stops data
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # Every Monday at 02:00 UTC
+  workflow_dispatch:       # Allow manual trigger from GitHub UI
+
+jobs:
+  update-stops:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download stops ZIP from Trafiklab
+        run: |
+          curl -fsSL \
+            "https://opendata.samtrafiken.se/stopsregister-netex-sweden/sweden.zip?key=${{ secrets.TRAFIKLAB_STOPS_KEY }}" \
+            -o sweden.zip
+
+      - name: Extract XML
+        run: |
+          unzip -o sweden.zip
+          XML_FILE=$(find . -maxdepth 2 -name "*.xml" | head -1)
+          echo "Found XML: $XML_FILE"
+          echo "XML_FILE=$XML_FILE" >> $GITHUB_ENV
+
+      - name: Generate stops JSON
+        run: node build-tools/extract-stops.js "$XML_FILE"
+
+      - name: Check for changes
+        id: diff
+        run: git diff --quiet public/stops.min2.json || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit updated stops data
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/stops.min2.json
+          git commit -m "chore: update stops data from Trafiklab"
+          git push
+
+      - name: Build app
+        if: steps.diff.outputs.changed == 'true'
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          npm run deploy
