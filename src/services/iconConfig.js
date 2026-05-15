@@ -6,7 +6,7 @@ import {
     TramFront,
     TrainFrontTunnel,
     Ship,
-    HelpCircle
+    MapPin
 } from 'lucide-vue-next'
 
 import busSvg from 'lucide-static/icons/bus.svg?raw'
@@ -14,7 +14,7 @@ import trainSvg from 'lucide-static/icons/train-front.svg?raw'
 import tramSvg from 'lucide-static/icons/tram-front.svg?raw'
 import subwaySvg from 'lucide-static/icons/train-front-tunnel.svg?raw'
 import ferrySvg from 'lucide-static/icons/ship.svg?raw'
-import helpSvg from 'lucide-static/icons/circle-help.svg?raw'
+import mapPinSvg from 'lucide-static/icons/map-pin.svg?raw'
 
 export const iconConfig = {
     rail: { icon: TrainFront, svg: trainSvg, color: '#3b82f6', bg: '#e0f0ff' },
@@ -23,6 +23,6 @@ export const iconConfig = {
     metro: { icon: TrainFrontTunnel, svg: subwaySvg, color: '#9333ea', bg: '#f3e8ff' },
     ferry: { icon: Ship, svg: ferrySvg, color: '#0ea5e9', bg: '#e0f7ff' },
     water: { icon: Ship, svg: ferrySvg, color: '#0ea5e9', bg: '#e0f7ff' },
-    other: { icon: HelpCircle, svg: helpSvg, color: '#6b7280', bg: '#f3f4f6' }
+    other: { icon: MapPin, svg: mapPinSvg, color: '#6b7280', bg: '#f3f4f6' }
 }
   
