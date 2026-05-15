@@ -7,7 +7,7 @@ import trainSvg from 'lucide-static/icons/train-front.svg?raw'
 import * as L from 'leaflet' // static import at the top
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'   // plugin IIFE runs immediately
 
-import { onMounted, onBeforeUnmount } from 'vue'
+import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { useStations } from '../composables/useStations'
 
 // Import global Cache
@@ -21,6 +21,7 @@ import { iconConfig } from '../services/iconConfig.js'
 const { addStation } = useStations()
 
 let map
+const locateState = ref('idle') // 'idle' | 'locating' | 'error'
 const MAP_STATE_KEY = 'leafletMapState' //Save location and zoom locally
 const saved = JSON.parse(localStorage.getItem(MAP_STATE_KEY) || '{}')
 const initialCenter = saved.center || [63.0, 16.5]
@@ -33,6 +34,9 @@ onMounted(async () => {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map)
+
+    map.on('locationfound', () => { locateState.value = 'idle' })
+    map.on('locationerror', () => { locateState.value = 'error'; setTimeout(() => locateState.value = 'idle', 3000) })
 
     onBeforeUnmount(() => {
         const center = map.getCenter()
@@ -92,6 +96,11 @@ onMounted(async () => {
 
 })
 
+function locateMe() {
+    locateState.value = 'locating'
+    map.locate({ setView: true, maxZoom: 14 })
+}
+
 function makeIcon(svg, color = '#2563eb', bg = '#fff') {
     return L.divIcon({
         html: `<div class="map-icon" style="color:${color}; background:${bg}">${svg}</div>`,
@@ -113,10 +122,66 @@ function renderPopup(stop) {
 </script>
 
 <template>
-    <div style="height:100%" id="map"></div>
+    <div class="map-wrapper">
+        <div id="map"></div>
+        <button
+            class="locate-btn"
+            :class="{ locating: locateState === 'locating', error: locateState === 'error' }"
+            @click="locateMe"
+            :disabled="locateState === 'locating'"
+        >
+            <span v-if="locateState === 'idle'">📍 Locate me</span>
+            <span v-else-if="locateState === 'locating'">Locating…</span>
+            <span v-else>Location unavailable</span>
+        </button>
+    </div>
 </template>
 
 <style>
+.map-wrapper {
+    position: relative;
+    height: 100%;
+}
+
+#map {
+    height: 100%;
+}
+
+.locate-btn {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-family: system-ui, sans-serif;
+    font-weight: 500;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    background: white;
+    color: #333;
+    cursor: pointer;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+}
+
+.locate-btn:hover:not(:disabled) {
+    background: #f0f0f0;
+}
+
+.locate-btn.locating {
+    color: #888;
+    cursor: default;
+}
+
+.locate-btn.error {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fca5a5;
+}
+
 @import "https://unpkg.com/leaflet/dist/leaflet.css";
 @import "https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css";
 @import "https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css";

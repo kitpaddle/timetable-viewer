@@ -9,6 +9,14 @@
             never accessible to the developer.
         </p>
 
+        <h2>Location</h2>
+        <p>
+            The "Locate me" button on the map uses your device's GPS/location to centre the map on
+            your current position. Your location is never sent to any server — it is used only
+            in-browser to set the map view. Your browser will ask for permission once and remember
+            your choice; you can revoke it at any time in your browser or device settings.
+        </p>
+
         <h2>What data is collected</h2>
         <p>
             The app itself collects no personal data. No accounts, no analytics, no tracking.
