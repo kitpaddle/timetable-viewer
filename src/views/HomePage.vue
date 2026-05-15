@@ -54,17 +54,6 @@ const { currentLimit } = useDepartureLimit()
     }
 }
 
-.card-leave-active {
-    transition: opacity 0.3s ease, max-height 0.35s ease, margin-bottom 0.35s ease;
-    overflow: hidden;
-    max-height: 800px;
-}
-
-.card-leave-to {
-    opacity: 0;
-    max-height: 0;
-    margin-bottom: 0;
-}
 
 @media (min-width: 768px) {
     .few-cards .station-card h2 {
