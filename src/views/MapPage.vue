@@ -18,7 +18,9 @@ import { stationCache } from '../services/stationCache.js'
 import { iconConfig } from '../services/iconConfig.js'
 
 
-// Acccess Composable
+// Expand single-char mode codes from JSON back to full names used by iconConfig/StationCard
+const MODE_EXPAND = { b: 'bus', r: 'rail', t: 'tram', m: 'metro', w: 'water', f: 'ferry', o: 'other' }
+
 const { addStation } = useStations()
 
 let map
@@ -65,7 +67,8 @@ onMounted(async () => {
 
         btn.onclick = () => {
             if (!btn._stop) return
-            addStation({ ...btn._stop })  // Full stop object passed into your store
+            const [id, name, lat, lon, modeChar] = btn._stop
+            addStation({ id, name, lat, lon, transportMode: MODE_EXPAND[modeChar] || 'other' })
 
             // Adding class for animation
             btn.classList.add('added')
@@ -98,8 +101,8 @@ onMounted(async () => {
             const end = Math.min(i + CHUNK, stops.length)
             for (; i < end; i++) {
                 const s = stops[i]
-                const { svg, color, bg } = iconConfig[s.transportMode] || iconConfig.other
-                const m = L.marker([s.lat, s.lon], { icon: makeIcon(svg, color, bg) })
+                const { svg, color, bg } = iconConfig[MODE_EXPAND[s[4]]] || iconConfig.other
+                const m = L.marker([s[2], s[3]], { icon: makeIcon(svg, color, bg) })
                 m.bindPopup(renderPopup(s))
                 m._stop = s
                 cluster.addLayer(m)
@@ -136,12 +139,12 @@ function makeIcon(svg, color = '#2563eb', bg = '#fff') {
     })
 }
 
-function renderPopup(stop) {
+function renderPopup(s) {
     return `
     <div class="popup-card">
-      <div class="popup-title">${stop.name}</div>
+      <div class="popup-title">${s[1]}</div>
       <button class="popup-btn">Add Station</button>
-      <div class="popup-id">Stop ID: ${stop.id}</div>
+      <div class="popup-id">Stop ID: ${s[0]}</div>
     </div>`
 }
 

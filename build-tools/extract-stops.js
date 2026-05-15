@@ -13,6 +13,9 @@ if (!fs.existsSync(SRC)) {
     process.exit(1);
 }
 
+// Full mode name → single char saved in JSON
+const MODE_CHAR = { bus: 'b', rail: 'r', tram: 't', metro: 'm', water: 'w', ferry: 'f' };
+
 const parser = sax.createStream(true);
 const src = fs.createReadStream(SRC);
 const out = fs.createWriteStream(DEST);
@@ -77,7 +80,10 @@ parser.on('closetag', tag => {
         if (stop.id && stop.lat && stop.lon) {
             if (!firstRecord) out.write(',');
             firstRecord = false;
-            out.write(JSON.stringify(stop));
+            const lat = Math.round(stop.lat * 10000) / 10000;
+            const lon = Math.round(stop.lon * 10000) / 10000;
+            const mode = MODE_CHAR[stop.transportMode] || 'o';
+            out.write(JSON.stringify([stop.id, stop.name, lat, lon, mode]));
             total++;
         }
         stop = null;
