@@ -22,9 +22,7 @@ import { iconConfig } from '../services/iconConfig.js'
 const { addStation } = useStations()
 
 let map
-let cancelled = false
 const locateState = ref('idle') // 'idle' | 'locating' | 'error'
-const stopsLoading = ref(true)
 const { t } = useLang()
 const MAP_STATE_KEY = 'leafletMapState' //Save location and zoom locally
 const saved = JSON.parse(localStorage.getItem(MAP_STATE_KEY) || '{}')
@@ -45,7 +43,6 @@ onMounted(async () => {
     map.on('locationerror', () => { locateState.value = 'error'; setTimeout(() => locateState.value = 'idle', 3000) })
 
     onBeforeUnmount(() => {
-        cancelled = true
         const center = map.getCenter()
         const zoom = map.getZoom()
         localStorage.setItem(MAP_STATE_KEY, JSON.stringify({
@@ -73,7 +70,7 @@ onMounted(async () => {
         }
     })
 
-    // Fetch stops (cached after first load)
+    // Fetch stops once, cache the data — but always build a fresh cluster for this map instance
     if (!stationCache.stopCache) {
         const stops = await fetch(`${import.meta.env.BASE_URL}stops.min2.json`)
             .then(r => {
@@ -83,33 +80,17 @@ onMounted(async () => {
         stationCache.stopCache = stops
     }
 
-    // Build markers in chunks so the browser can paint tiles between batches
     const cluster = L.markerClusterGroup()
-    const stops = stationCache.stopCache
-    const CHUNK = 1500
-    let i = 0
-
-    function addChunk() {
-        if (cancelled) return
-        const end = Math.min(i + CHUNK, stops.length)
-        for (; i < end; i++) {
-            const s = stops[i]
-            const { svg, color, bg } = iconConfig[s.transportMode] || iconConfig.other
-            const m = L.marker([s.lat, s.lon], { icon: makeIcon(svg, color, bg) })
-            m.bindPopup(renderPopup(s))
-            m._stop = s
-            cluster.addLayer(m)
-        }
-        if (i < stops.length) {
-            setTimeout(addChunk, 0)
-        } else {
-            if (!cancelled) {
-                map.addLayer(cluster)
-                stopsLoading.value = false
-            }
-        }
-    }
-    setTimeout(addChunk, 0)
+    stationCache.stopCache.forEach(s => {
+        const { svg, color, bg } = iconConfig[s.transportMode] || iconConfig.other
+        const m = L.marker([s.lat, s.lon], {
+            icon: makeIcon(svg, color, bg)
+        })
+        m.bindPopup(renderPopup(s))
+        m._stop = s
+        cluster.addLayer(m)
+    })
+    map.addLayer(cluster)
 
 })
 
@@ -141,7 +122,6 @@ function renderPopup(stop) {
 <template>
     <div class="map-wrapper">
         <div id="map"></div>
-        <div v-if="stopsLoading" class="map-loading">Laddar hållplatser…</div>
         <button
             class="locate-btn"
             :class="{ locating: locateState === 'locating', error: locateState === 'error' }"
@@ -167,21 +147,6 @@ function renderPopup(stop) {
 
 #map {
     height: 100%;
-}
-
-.map-loading {
-    position: absolute;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    font-size: 13px;
-    padding: 5px 12px;
-    border-radius: 20px;
-    pointer-events: none;
-    white-space: nowrap;
 }
 
 .locate-btn {
