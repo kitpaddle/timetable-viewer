@@ -24,6 +24,7 @@ jobs:
       - name: Download stops ZIP from Trafiklab
         run: |
           HTTP_CODE=$(curl -sSL -w "%{http_code}" \
+            -H "Accept-Encoding: gzip" \
             "https://opendata.samtrafiken.se/stopsregister-netex-sweden/sweden.zip?key=${{ secrets.TRAFIKLAB_STOPS_KEY }}" \
             -o sweden.zip)
           echo "HTTP status: $HTTP_CODE"
