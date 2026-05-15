@@ -188,15 +188,15 @@ onMounted(() => {
 }
 
 .theme-btn {
-  padding: 4px 6px;
+  padding: 0 6px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .lang-btn {
-  font-size: 12px;
-  line-height: 1;
+  font-size: 13px;
 }
 
 
