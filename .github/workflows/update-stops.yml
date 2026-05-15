@@ -16,16 +16,22 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
         run: npm ci
 
       - name: Download stops ZIP from Trafiklab
         run: |
-          curl -fsSL \
+          HTTP_CODE=$(curl -sSL -w "%{http_code}" \
             "https://opendata.samtrafiken.se/stopsregister-netex-sweden/sweden.zip?key=${{ secrets.TRAFIKLAB_STOPS_KEY }}" \
-            -o sweden.zip
+            -o sweden.zip)
+          echo "HTTP status: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Download failed. Response body:"
+            cat sweden.zip
+            exit 1
+          fi
 
       - name: Extract XML
         run: |
