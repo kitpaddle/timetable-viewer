@@ -197,6 +197,8 @@ onMounted(() => {
 
 .lang-btn {
   font-size: 13px;
+  line-height: 1;
+  padding-bottom: 1px;
 }
 
 
