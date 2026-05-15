@@ -23,6 +23,7 @@ const { addStation } = useStations()
 
 let map
 const locateState = ref('idle') // 'idle' | 'locating' | 'error'
+const stopsLoading = ref(true)
 const { t } = useLang()
 const MAP_STATE_KEY = 'leafletMapState' //Save location and zoom locally
 const saved = JSON.parse(localStorage.getItem(MAP_STATE_KEY) || '{}')
@@ -70,27 +71,30 @@ onMounted(async () => {
         }
     })
 
-    // Fetch stops once, cache the data — but always build a fresh cluster for this map instance
-    if (!stationCache.stopCache) {
-        const stops = await fetch(`${import.meta.env.BASE_URL}stops.min2.json`)
-            .then(r => {
-                if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
-                return r.json()
-            })
-        stationCache.stopCache = stops
-    }
+    // Let the map render first, then build the cluster off the main thread tick
+    setTimeout(async () => {
+        if (!stationCache.stopCache) {
+            const stops = await fetch(`${import.meta.env.BASE_URL}stops.min2.json`)
+                .then(r => {
+                    if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
+                    return r.json()
+                })
+            stationCache.stopCache = stops
+        }
 
-    const cluster = L.markerClusterGroup()
-    stationCache.stopCache.forEach(s => {
-        const { svg, color, bg } = iconConfig[s.transportMode] || iconConfig.other
-        const m = L.marker([s.lat, s.lon], {
-            icon: makeIcon(svg, color, bg)
+        const cluster = L.markerClusterGroup()
+        stationCache.stopCache.forEach(s => {
+            const { svg, color, bg } = iconConfig[s.transportMode] || iconConfig.other
+            const m = L.marker([s.lat, s.lon], {
+                icon: makeIcon(svg, color, bg)
+            })
+            m.bindPopup(renderPopup(s))
+            m._stop = s
+            cluster.addLayer(m)
         })
-        m.bindPopup(renderPopup(s))
-        m._stop = s
-        cluster.addLayer(m)
-    })
-    map.addLayer(cluster)
+        map.addLayer(cluster)
+        stopsLoading.value = false
+    }, 0)
 
 })
 
@@ -122,6 +126,7 @@ function renderPopup(stop) {
 <template>
     <div class="map-wrapper">
         <div id="map"></div>
+        <div v-if="stopsLoading" class="map-loading">Laddar hållplatser…</div>
         <button
             class="locate-btn"
             :class="{ locating: locateState === 'locating', error: locateState === 'error' }"
@@ -147,6 +152,21 @@ function renderPopup(stop) {
 
 #map {
     height: 100%;
+}
+
+.map-loading {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    font-size: 13px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    pointer-events: none;
+    white-space: nowrap;
 }
 
 .locate-btn {
