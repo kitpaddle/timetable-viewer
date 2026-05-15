@@ -1,8 +1,8 @@
 <template>
   <div class="app-layout">
     <nav class="nav">
-      <RouterLink to="/about" class="info-btn" title="About">
-        <InfoIcon class="info-icon" />
+      <RouterLink to="/about" class="nav-button theme-btn" title="About">
+        <InfoIcon class="theme-icon" />
       </RouterLink>
       <div class="nav-left">{{ t('updatedAt') }} {{ lastUpdated }}</div>
       <div class="nav-center">
@@ -15,7 +15,7 @@
         <button class="nav-button theme-btn" @click="toggleTheme" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
           <component :is="isDark ? SunIcon : MoonIcon" class="theme-icon" />
         </button>
-        <button class="nav-button lang-btn" @click="toggleLang" :title="lang === 'sv' ? 'Switch to English' : 'Byt till svenska'">
+        <button class="nav-button theme-btn" @click="toggleLang" :title="lang === 'sv' ? 'Switch to English' : 'Byt till svenska'">
           {{ otherFlag }}
         </button>
         <button class="nav-button" @click="cycleLimit">
@@ -111,6 +111,7 @@ onMounted(() => {
   height: 34px;
   display: flex;
   align-items: center;
+  gap: 0.4rem;
   padding: 0 0.5rem;
   background-color: var(--color-nav);
 }
@@ -125,23 +126,6 @@ onMounted(() => {
   min-width: 0;
 }
 
-.info-btn {
-  display: flex;
-  align-items: center;
-  color: var(--color-text-muted);
-  flex-shrink: 0;
-  opacity: 0.7;
-  transition: opacity 0.15s;
-}
-
-.info-btn:hover {
-  opacity: 1;
-}
-
-.info-icon {
-  width: 14px;
-  height: 14px;
-}
 
 .nav-center {
   position: absolute;
@@ -210,11 +194,6 @@ onMounted(() => {
   justify-content: center;
 }
 
-.lang-btn {
-  font-size: 16px;
-  padding: 2px 5px;
-  line-height: 1;
-}
 
 .theme-icon {
   width: 15px;
