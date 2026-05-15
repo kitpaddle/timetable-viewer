@@ -12,14 +12,12 @@ const { currentLimit } = useDepartureLimit()
         <main class="grid-wrapper">
             <div v-if="stations.length === 0" class="welcome">
                 <p class="welcome-en">
-                    Here you can see schedules and real-time departures for most public transport stops in Sweden.
-                    Tap <strong>Add Stops</strong> above and choose which stations you wish to see departures for.
-                    It will show the next 20 departures, or any departures up to 2 hours from now.
+                    See scheduled and real-time departures for the stops of your choosing in Sweden.
+                    Tap <strong>Add Stops</strong> to choose which stops &amp; stations you wish to see departure times for.
                 </p>
                 <p class="welcome-sv">
-                    Här kan du se tidtabeller och realtidsavgångar för de flesta kollektivtrafikshållplatser i Sverige.
-                    Tryck på <strong>Lägg till hållplatser</strong> ovan och välj vilka hållplatser du vill se avgångar för.
-                    Visar de nästa 20 avgångarna, eller avgångar upp till 2 timmar från nu.
+                    Se tidtabeller och realtidsavgångar för valfria hållplatser i Sverige.
+                    Tryck på <strong>Lägg till hållplatser</strong> för att välja vilka hållplatser och stationer du vill se avgångstider för.
                 </p>
             </div>
             <TransitionGroup v-else name="card" tag="div" :class="['card-grid', stations.length <= 2 ? 'few-cards' : stations.length === 3 ? 'three-cards' : '']">
