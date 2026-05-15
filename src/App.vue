@@ -1,7 +1,12 @@
 <template>
   <div class="app-layout">
     <nav class="nav">
-      <div class="nav-left">Last updated at {{ lastUpdated }}</div>
+      <div class="nav-left">
+        <RouterLink to="/about" class="info-btn" title="About">
+          <InfoIcon class="info-icon" />
+        </RouterLink>
+        Last updated at {{ lastUpdated }}
+      </div>
       <div class="nav-center">
         <button class="nav-link nav-toggle" @click="toggleView">
           <component v-if="isOnMap" :is="ClockIcon" class="toggle-icon" />
@@ -39,7 +44,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
-import { Sun as SunIcon, Moon as MoonIcon, Clock as ClockIcon } from 'lucide-vue-next'
+import { Sun as SunIcon, Moon as MoonIcon, Clock as ClockIcon, Info as InfoIcon } from 'lucide-vue-next'
 import { useDepartureLimit } from './composables/useDepartureLimit'
 import { useStations } from './composables/useStations'
 import { useGlobalDepartures } from './composables/useGlobalDepartures'
@@ -115,6 +120,27 @@ onMounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.info-btn {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.info-btn:hover {
+  opacity: 1;
+}
+
+.info-icon {
+  width: 14px;
+  height: 14px;
 }
 
 .nav-center {

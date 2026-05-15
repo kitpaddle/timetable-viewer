@@ -87,6 +87,7 @@ parser.on('closetag', tag => {
 
 parser.on('end', () => {
     out.end(']');
+    fs.writeFileSync(path.resolve('public/stops-meta.json'), JSON.stringify({ count: total }))
     console.log(`✅  Extracted ${total} stops → ${path.basename(DEST)}`);
 });
 
