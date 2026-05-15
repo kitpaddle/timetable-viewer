@@ -1,12 +1,10 @@
 <template>
   <div class="app-layout">
     <nav class="nav">
-      <div class="nav-left">
-        <RouterLink to="/about" class="info-btn" title="About">
-          <InfoIcon class="info-icon" />
-        </RouterLink>
-        Last updated at {{ lastUpdated }}
-      </div>
+      <RouterLink to="/about" class="info-btn" title="About">
+        <InfoIcon class="info-icon" />
+      </RouterLink>
+      <div class="nav-left">Last updated at {{ lastUpdated }}</div>
       <div class="nav-center">
         <button class="nav-link nav-toggle" @click="toggleView">
           <component v-if="isOnMap" :is="ClockIcon" class="toggle-icon" />
@@ -120,9 +118,6 @@ onMounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
 }
 
 .info-btn {
