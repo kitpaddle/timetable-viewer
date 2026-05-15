@@ -25,7 +25,11 @@
     </nav>
 
     <div class="content">
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <KeepAlive include="MapPage">
+          <component :is="Component" />
+        </KeepAlive>
+      </RouterView>
     </div>
 
     <div class="ad-slot">

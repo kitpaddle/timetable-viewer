@@ -7,7 +7,7 @@ import trainSvg from 'lucide-static/icons/train-front.svg?raw'
 import * as L from 'leaflet' // static import at the top
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'   // plugin IIFE runs immediately
 
-import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
+import { onMounted, onBeforeUnmount, onActivated, ref, nextTick } from 'vue'
 import { useLang } from '../composables/useLang'
 import { useStations } from '../composables/useStations'
 
@@ -119,6 +119,8 @@ onMounted(async () => {
     setTimeout(() => { if (stopsLoading.value) startBuild() }, 1000)
 
 })
+
+onActivated(() => { if (map) map.invalidateSize() })
 
 function locateMe() {
     locateState.value = 'locating'
