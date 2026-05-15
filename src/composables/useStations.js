@@ -17,11 +17,8 @@ export function useStations() {
             lon: obj.lon,
             transportMode: obj.transportMode
         })
-        console.log("Adding Station: ", obj.id)
-        console.log("TransportMode: ", obj.transportMode)
     }
     function removeStation(uid) {
-        console.log("Removing station: ", uid)
         const index = stations.value.findIndex(s => s.uid === uid)
         if (index !== -1) stations.value.splice(index, 1)
     }

@@ -97,10 +97,6 @@ onMounted(async () => {
 })
 
 
-watch(filteredDepartures, (current) => {
-    const cats = new Set(current.map(d => d.tMode))
-    console.log('Filtered tMode values:', [...cats])
-})
 
 watch(uniqueLines, checkOverflow)
 watch(showAllLines, checkOverflow)
