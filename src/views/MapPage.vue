@@ -22,6 +22,7 @@ import { iconConfig } from '../services/iconConfig.js'
 const { addStation } = useStations()
 
 let map
+let cancelled = false
 const locateState = ref('idle') // 'idle' | 'locating' | 'error'
 const stopsLoading = ref(true)
 const { t } = useLang()
@@ -44,6 +45,7 @@ onMounted(async () => {
     map.on('locationerror', () => { locateState.value = 'error'; setTimeout(() => locateState.value = 'idle', 3000) })
 
     onBeforeUnmount(() => {
+        cancelled = true
         const center = map.getCenter()
         const zoom = map.getZoom()
         localStorage.setItem(MAP_STATE_KEY, JSON.stringify({
@@ -71,30 +73,50 @@ onMounted(async () => {
         }
     })
 
-    // Let the map render first, then build the cluster off the main thread tick
-    setTimeout(async () => {
-        if (!stationCache.stopCache) {
-            const stops = await fetch(`${import.meta.env.BASE_URL}stops.min2.json`)
-                .then(r => {
-                    if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
-                    return r.json()
-                })
-            stationCache.stopCache = stops
-        }
-
-        const cluster = L.markerClusterGroup()
-        stationCache.stopCache.forEach(s => {
-            const { svg, color, bg } = iconConfig[s.transportMode] || iconConfig.other
-            const m = L.marker([s.lat, s.lon], {
-                icon: makeIcon(svg, color, bg)
+    // Fetch stops immediately in parallel with tile loading
+    if (!stationCache.stopCache) {
+        stationCache.stopCache = await fetch(`${import.meta.env.BASE_URL}stops.min2.json`)
+            .then(r => {
+                if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
+                return r.json()
             })
-            m.bindPopup(renderPopup(s))
-            m._stop = s
-            cluster.addLayer(m)
-        })
-        map.addLayer(cluster)
-        stopsLoading.value = false
-    }, 0)
+    }
+
+    // Wait for tiles to paint, then build markers in chunks
+    // Cluster is added to the map only once fully built — stops appear all at once
+    let buildStarted = false
+    const startBuild = () => {
+        if (cancelled || buildStarted) return
+        buildStarted = true
+        const cluster = L.markerClusterGroup()
+        const stops = stationCache.stopCache
+        const CHUNK = 2000
+        let i = 0
+
+        function addChunk() {
+            if (cancelled) return
+            const end = Math.min(i + CHUNK, stops.length)
+            for (; i < end; i++) {
+                const s = stops[i]
+                const { svg, color, bg } = iconConfig[s.transportMode] || iconConfig.other
+                const m = L.marker([s.lat, s.lon], { icon: makeIcon(svg, color, bg) })
+                m.bindPopup(renderPopup(s))
+                m._stop = s
+                cluster.addLayer(m)
+            }
+            if (i < stops.length) {
+                setTimeout(addChunk, 0)
+            } else if (!cancelled) {
+                map.addLayer(cluster)
+                stopsLoading.value = false
+            }
+        }
+        setTimeout(addChunk, 0)
+    }
+
+    map.once('load', startBuild)
+    // Fallback: if tiles are already cached and load fires before we attach, start after a short delay
+    setTimeout(() => { if (stopsLoading.value) startBuild() }, 1000)
 
 })
 
