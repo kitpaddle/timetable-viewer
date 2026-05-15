@@ -138,6 +138,10 @@ function renderPopup(stop) {
 </template>
 
 <style>
+@import "https://unpkg.com/leaflet/dist/leaflet.css";
+@import "https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css";
+@import "https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css";
+
 .map-wrapper {
     position: relative;
     height: 100%;
@@ -181,10 +185,6 @@ function renderPopup(stop) {
     color: #b91c1c;
     border-color: #fca5a5;
 }
-
-@import "https://unpkg.com/leaflet/dist/leaflet.css";
-@import "https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css";
-@import "https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 .map-icon {
     width: 30x;
