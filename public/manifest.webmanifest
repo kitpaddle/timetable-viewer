@@ -1,7 +1,7 @@
 {
-  "name": "Timetable Viewer",
-  "short_name": "Timetable",
-  "description": "Real-time public transport departure boards",
+  "name": "Avgångar.se",
+  "short_name": "Avgångar",
+  "description": "Realtidsavgångar för kollektivtrafik i Sverige",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
