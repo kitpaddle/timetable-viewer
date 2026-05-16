@@ -22,7 +22,7 @@ const content = computed(() => lang.value === 'sv' ? {
     tiles: [
         { icon: '🗺️', title: `${stopCount.value} hållplatser`, text: 'Bussar, tåg, tunnelbana, spårvagn och färjor i hela Sverige.' },
         { icon: '💾', title: 'Dina val sparas', text: 'Valda hållplatser och inställningar lagras lokalt i webbläsaren.' },
-        { icon: '🔄', title: 'Automatisk uppdatering', text: 'Uppdateras var 20:e minut — perfekt för större skärmar och magic mirrors.' },
+        { icon: '🔄', title: 'Auto-uppdatering', text: 'Uppdateras var 20:e minut — perfekt för större skärmar och magic mirrors.' },
         { icon: '📡', title: 'Realtidsdata', text: 'Visar max 20 avgångar inom 2 timmar. Realtid visas i blått.' },
         { icon: '🌙', title: 'Ljust / mörkt läge', text: 'Växla med sol/måne-knappen uppe till höger.' },
         { icon: '🔢', title: 'Rader-knappen', text: 'Styr hur många avgångar som visas per hållplats.' },
