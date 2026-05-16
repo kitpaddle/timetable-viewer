@@ -28,6 +28,7 @@ const content = computed(() => lang.value === 'sv' ? {
         { icon: '🔢', title: 'Rader-knappen', text: 'Styr hur många avgångar som visas per hållplats.' },
         { icon: '📍', title: 'Lägg till hållplatser', text: 'Tryck på "Hållplatser" för att öppna kartan och hitta hållplatser nära dig.' },
         { icon: '✕', title: 'Ta bort hållplatser', text: 'Tryck på ✕ i hörnet på ett avgångskort för att ta bort det.' },
+        { icon: '📲', title: 'Spara som app', text: 'iOS: tryck Dela → Lägg till på hemskärmen. Android: webbläsarmenyn → Installera.' },
     ]
 } : {
     title: 'About Avgångar.se',
@@ -43,6 +44,7 @@ const content = computed(() => lang.value === 'sv' ? {
         { icon: '🔢', title: 'Rows button', text: 'Controls how many departures to show per stop.' },
         { icon: '📍', title: 'Add stops', text: 'Tap "Add Stops" to open the map and find stops near you.' },
         { icon: '✕', title: 'Remove stops', text: 'Tap ✕ on a departure card to remove that stop.' },
+        { icon: '📲', title: 'Install as app', text: 'iOS: tap Share → Add to Home Screen. Android: browser menu → Install app.' },
     ]
 })
 </script>
