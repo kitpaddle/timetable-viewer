@@ -7,17 +7,19 @@ const strings = {
     addStops:   'Hållplatser',
     viewTimes:  'Tidtabeller',
     updatedAt:  'Uppdaterad',
-    locateMe:   'Hitta mig',
-    locating:   'Söker…',
-    locationErr:'Plats ej tillgänglig',
+    locateMe:    'Hitta mig',
+    locating:    'Söker…',
+    locationErr: 'Plats ej tillgänglig',
+    noDepartures:'Inga avgångar kommande 2 tim',
   },
   en: {
-    addStops:   'Add Stops',
-    viewTimes:  'View Times',
-    updatedAt:  'Updated at',
-    locateMe:   'Locate me',
-    locating:   'Locating…',
-    locationErr:'Location unavailable',
+    addStops:    'Add Stops',
+    viewTimes:   'View Times',
+    updatedAt:   'Updated at',
+    locateMe:    'Locate me',
+    locating:    'Locating…',
+    locationErr: 'Location unavailable',
+    noDepartures:'No departures in the next 2 hrs',
   }
 }
 

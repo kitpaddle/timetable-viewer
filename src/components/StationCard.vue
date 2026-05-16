@@ -4,6 +4,7 @@ import { getDepartures } from '../services/timetableApi'
 import { iconConfig } from '../services/iconConfig.js'
 import { useStations } from '../composables/useStations'
 import { useGlobalDepartures } from '../composables/useGlobalDepartures'
+import { useLang } from '../composables/useLang'
 
 const props = defineProps({ 
     station: Object,
@@ -12,7 +13,8 @@ const props = defineProps({
         default: 10
     }
  })
-const { removeStation } = useStations()  // assumes your composable handles this
+const { removeStation } = useStations()
+const { t } = useLang()
 
 const departures = ref([])
 const loading = ref(true)
@@ -141,6 +143,7 @@ watch(refreshTrigger, async () => {
         <div class="list-container">
             <p v-if="loading">Loading…</p>
             <p v-else-if="error" style="color:#b00">{{ error }}</p>
+            <p v-else-if="filteredDepartures.length === 0" class="no-departures">{{ t('noDepartures') }}</p>
 
             <TransitionGroup name="departure" tag="ul" class="departure-list" v-if="!loading && !error">
                 <li v-for="d in filteredDepartures" :key="d.id" class="departure-row">
@@ -244,6 +247,13 @@ watch(refreshTrigger, async () => {
 .departure-time.dimmed {
     color: var(--color-text-faint);
     text-decoration: line-through;
+}
+
+.no-departures {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    padding: 0.25rem 0;
 }
 
 .snap {
