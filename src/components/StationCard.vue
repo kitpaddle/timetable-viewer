@@ -34,10 +34,8 @@ const { refreshTrigger } = useGlobalDepartures()
 // Step 1: Filter by transport mode (before anything else)
 const modeFiltered = computed(() => {
     const mode = props.station.transportMode
-    return departures.value.filter(d => {
-        if (mode === 'other') return d.tMode === 'bus'
-        return d.tMode === mode
-    })
+    if (mode === 'other') return departures.value
+    return departures.value.filter(d => d.tMode === mode)
 })
 
 // Step 2: Compute unique lines *after* mode filtering
