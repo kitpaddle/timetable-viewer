@@ -39,12 +39,30 @@ parser.on('opentag', node => {
     if (node.name === 'StopPlace') {
         inStop = true;
         stop = {
-            id: null,   // rikshallplats 740-ID
+            id: null,
             name: null,
             lat: null,
             lon: null,
-            transportMode: null   // bus / rail / …
+            transportMode: null,
+            municipality: null
         };
+    }
+
+    // TopographicPlaceRef carries ref="NSR:TopographicPlace:XXX" where descriptive name
+    // may be in the Name child. But Trafiklab NeTEx often puts municipality in keyValue
+    // with key="municipality" or as TopographicPlaceRef/@ref last segment.
+    if (inStop && node.name === 'TopographicPlaceRef' && node.attributes) {
+        // ref looks like "NSR:TopographicPlace:0180" or "SE:Topographic:Stockholm"
+        // Try to extract a readable name from the ref as a fallback
+        const ref = node.attributes.ref || node.attributes.Ref || ''
+        if (ref && !stop.municipality) {
+            const parts = ref.split(':')
+            const last = parts[parts.length - 1]
+            // Only use it if it looks like a name (not a pure numeric ID)
+            if (last && !/^\d+$/.test(last)) {
+                stop.municipality = last
+            }
+        }
     }
 });
 
@@ -62,16 +80,25 @@ parser.on('text', txt => {
     if (PATH('Latitude')) { stop.lat = parseFloat(t); return; }
     if (PATH('Longitude')) { stop.lon = parseFloat(t); return; }
 
-    // KeyValue pair → rikshallplats
+    // KeyValue pairs
     if (PATH('KeyValue', 'Key')) { keyPending = t; return; }
     if (PATH('KeyValue', 'Value')) {
         if (keyPending === 'rikshallplats') stop.id = t;
+        if (keyPending === 'municipality' || keyPending === 'Municipality') {
+            stop.municipality ??= t;
+        }
         keyPending = null;
         return;
     }
 
     // TransportMode
     if (PATH('TransportMode')) { stop.transportMode = t; return; }
+
+    // TopographicPlace Name inside a parent TopographicPlace element
+    if (PATH('TopographicPlace', 'Name') || PATH('TopographicPlaceRef', 'Name')) {
+        stop.municipality ??= t;
+        return;
+    }
 });
 
 parser.on('closetag', tag => {
@@ -83,7 +110,11 @@ parser.on('closetag', tag => {
             const lat = Math.round(stop.lat * 10000) / 10000;
             const lon = Math.round(stop.lon * 10000) / 10000;
             const mode = MODE_CHAR[stop.transportMode] || 'o';
-            out.write(JSON.stringify([stop.id, stop.name, lat, lon, mode]));
+            // Only include municipality if present (keeps file size small for stops without it)
+            const row = stop.municipality
+                ? [stop.id, stop.name, lat, lon, mode, stop.municipality]
+                : [stop.id, stop.name, lat, lon, mode];
+            out.write(JSON.stringify(row));
             total++;
         }
         stop = null;

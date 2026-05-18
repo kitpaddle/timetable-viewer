@@ -7,7 +7,7 @@ import trainSvg from 'lucide-static/icons/train-front.svg?raw'
 import * as L from 'leaflet' // static import at the top
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'   // plugin IIFE runs immediately
 
-import { onMounted, onBeforeUnmount, onActivated, ref, nextTick } from 'vue'
+import { onMounted, onBeforeUnmount, onActivated, ref, computed, nextTick } from 'vue'
 import { useLang } from '../composables/useLang'
 import { useStations } from '../composables/useStations'
 
@@ -24,10 +24,29 @@ const MODE_EXPAND = { b: 'bus', r: 'rail', t: 'tram', m: 'metro', w: 'water', f:
 const { addStation } = useStations()
 
 let map
+let cluster = null
+let markerMap = {}
+let locationDot = null
+let locationRing = null
 let cancelled = false
 const locateState = ref('idle') // 'idle' | 'locating' | 'error'
 const stopsLoading = ref(true)
+const searchQuery = ref('')
+const searchOpen = ref(false)
 const { t } = useLang()
+
+const searchResults = computed(() => {
+    const q = searchQuery.value.trim().toLowerCase()
+    if (!q || !stationCache.stopCache) return []
+    const results = []
+    for (const s of stationCache.stopCache) {
+        if (s[1].toLowerCase().includes(q)) {
+            results.push(s)
+            if (results.length >= 8) break
+        }
+    }
+    return results
+})
 const MAP_STATE_KEY = 'leafletMapState' //Save location and zoom locally
 const saved = JSON.parse(localStorage.getItem(MAP_STATE_KEY) || '{}')
 const initialCenter = saved.center || [63.0, 16.5]
@@ -43,7 +62,20 @@ onMounted(async () => {
 
     nextTick(() => map.invalidateSize())
 
-    map.on('locationfound', () => { locateState.value = 'idle' })
+    map.on('locationfound', e => {
+        locateState.value = 'idle'
+        if (locationDot) map.removeLayer(locationDot)
+        if (locationRing) map.removeLayer(locationRing)
+        locationDot = L.circleMarker(e.latlng, {
+            radius: 7, fillColor: '#3b82f6', color: '#fff', weight: 2, fillOpacity: 1
+        }).addTo(map)
+        if (e.accuracy > 0) {
+            locationRing = L.circle(e.latlng, {
+                radius: e.accuracy, color: '#3b82f6', fillColor: '#93c5fd',
+                fillOpacity: 0.15, weight: 1, interactive: false
+            }).addTo(map)
+        }
+    })
     map.on('locationerror', () => { locateState.value = 'error'; setTimeout(() => locateState.value = 'idle', 3000) })
 
     onBeforeUnmount(() => {
@@ -96,7 +128,8 @@ onMounted(async () => {
     const startBuild = () => {
         if (cancelled || buildStarted) return
         buildStarted = true
-        const cluster = L.markerClusterGroup()
+        cluster = L.markerClusterGroup()
+        markerMap = {}
         const stops = stationCache.stopCache
         const CHUNK = 2000
         let i = 0
@@ -110,6 +143,7 @@ onMounted(async () => {
                 const m = L.marker([s[2], s[3]], { icon: makeIcon(svg, color, bg) })
                 m.bindPopup(renderPopup(s))
                 m._stop = s
+                markerMap[s[0]] = m
                 cluster.addLayer(m)
             }
             if (i < stops.length) {
@@ -129,6 +163,17 @@ onMounted(async () => {
 })
 
 onActivated(() => { if (map) map.invalidateSize() })
+
+function searchStop(s) {
+    searchQuery.value = ''
+    searchOpen.value = false
+    const marker = markerMap[s[0]]
+    if (marker && cluster) {
+        cluster.zoomToShowLayer(marker, () => marker.openPopup())
+    } else {
+        map.flyTo([s[2], s[3]], 16)
+    }
+}
 
 function locateMe() {
     locateState.value = 'locating'
@@ -159,6 +204,23 @@ function renderPopup(s) {
     <div class="map-wrapper">
         <div id="map"></div>
         <div v-if="stopsLoading" class="map-loading">Laddar hållplatser…</div>
+
+        <div class="search-box">
+            <input
+                class="search-input"
+                :placeholder="t('searchPlaceholder')"
+                v-model="searchQuery"
+                @focus="searchOpen = true"
+                @blur="setTimeout(() => searchOpen = false, 150)"
+            />
+            <ul v-if="searchOpen && searchResults.length > 0" class="search-results">
+                <li v-for="s in searchResults" :key="s[0]" @mousedown="searchStop(s)">
+                    <span class="search-result-name">{{ s[1] }}</span>
+                    <span class="search-result-mode">{{ s[5] || MODE_EXPAND[s[4]] }}</span>
+                </li>
+            </ul>
+        </div>
+
         <button
             class="locate-btn"
             :class="{ locating: locateState === 'locating', error: locateState === 'error' }"
@@ -200,6 +262,77 @@ function renderPopup(s) {
     border-radius: 12px;
     pointer-events: none;
     white-space: nowrap;
+}
+
+.search-box {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    width: 220px;
+}
+
+.search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-family: system-ui, sans-serif;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 6px;
+    background: white;
+    color: #333;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: #3b82f6;
+}
+
+.search-results {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    background: white;
+    border: 2px solid rgba(0,0,0,0.15);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.search-results li {
+    padding: 7px 10px;
+    font-size: 13px;
+    font-family: system-ui, sans-serif;
+    color: #333;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+}
+
+.search-results li:last-child {
+    border-bottom: none;
+}
+
+.search-results li:hover {
+    background: #f0f7ff;
+}
+
+.search-result-name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.search-result-mode {
+    flex: 0 0 auto;
+    font-size: 11px;
+    color: #888;
+    text-transform: capitalize;
+    margin-left: 6px;
 }
 
 .locate-btn {
