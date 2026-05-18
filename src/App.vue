@@ -167,6 +167,13 @@ onMounted(() => {
   gap: 0.35rem;
   border: none;
   cursor: pointer;
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.nav-toggle:hover {
+  background-color: #2563eb;
+  color: #fff;
 }
 
 .toggle-icon {

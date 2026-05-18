@@ -2,16 +2,20 @@
 import { useStations } from '../composables/useStations'
 import StationCard from '../components/StationCard.vue'
 import { useDepartureLimit } from '../composables/useDepartureLimit'
-import AboutPage from './AboutPage.vue'
+import { useLang } from '../composables/useLang'
 
 const { stations } = useStations()
 const { currentLimit } = useDepartureLimit()
+const { t } = useLang()
 </script>
 
 <template>
     <div class="grid-container">
         <main class="grid-wrapper">
-            <AboutPage v-if="stations.length === 0" :show-back="false" />
+            <div v-if="stations.length === 0" class="welcome">
+                <p class="welcome-main">{{ t('welcomeMain') }}</p>
+                <p class="welcome-sub">{{ t('welcomeSub') }}</p>
+            </div>
             <TransitionGroup v-else name="card" tag="div" :class="['card-grid', stations.length <= 2 ? 'few-cards' : stations.length === 3 ? 'three-cards' : '']">
                 <StationCard v-for="s in stations" :key="s.uid" :station="s" :max-rows="currentLimit" />
             </TransitionGroup>
@@ -21,6 +25,31 @@ const { currentLimit } = useDepartureLimit()
   
 
 <style>
+.welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    text-align: center;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.welcome-main {
+    font-size: 1rem;
+    color: var(--color-text);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.welcome-sub {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
 .grid-container {
     height: 100%;
     overflow: hidden;

@@ -25,25 +25,18 @@ const overflowDetected = ref(false)
 
 const HIDDEN_LINES_KEY = `hiddenLines_${props.station.id}`
 const hiddenLines = ref(new Set(JSON.parse(localStorage.getItem(HIDDEN_LINES_KEY) || '[]')))
-
 watch(hiddenLines, val => {
     localStorage.setItem(HIDDEN_LINES_KEY, JSON.stringify([...val]))
 }, { deep: true })
+
 const { refreshTrigger } = useGlobalDepartures()
 
-// Step 1: Filter by transport mode (before anything else)
-const modeFiltered = computed(() => {
-    const mode = props.station.transportMode
-    if (mode === 'other') return departures.value
-    return departures.value.filter(d => d.tMode === mode)
-})
+const modeFiltered = computed(() => departures.value)
 
-// Step 2: Compute unique lines *after* mode filtering
 const uniqueLines = computed(() => {
     return [...new Set(modeFiltered.value.map(d => d.line))].sort()
 })
 
-// Step 3: Apply line visibility filter and slicing
 const filteredDepartures = computed(() => {
     return modeFiltered.value
         .filter(d => !hiddenLines.value.has(d.line))
@@ -57,6 +50,7 @@ function toggleLine(line) {
         hiddenLines.value.add(line)
     }
 }
+
 
 function toggleLineWrap() {
     showAllLines.value = !showAllLines.value
@@ -139,7 +133,7 @@ watch(refreshTrigger, async () => {
             <button class="close-btn" @click="remove">✕</button>
         </header>
         <div class="list-container">
-            <p v-if="loading">Loading…</p>
+<p v-if="loading">Loading…</p>
             <p v-else-if="error" style="color:#b00">{{ error }}</p>
             <p v-else-if="filteredDepartures.length === 0" class="no-departures">{{ t('noDepartures') }}</p>
 
@@ -187,7 +181,7 @@ watch(refreshTrigger, async () => {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
     overflow-y: auto;
     scrollbar-width: none;
     overflow-anchor: none;
@@ -202,7 +196,7 @@ watch(refreshTrigger, async () => {
     align-items: center;
     font-size: 1rem;
     border-bottom: 1px solid var(--color-border);
-    padding: 4px 0;
+    padding: 2px 0;
     gap: 0.5rem;
 }
 
@@ -262,7 +256,7 @@ watch(refreshTrigger, async () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: 0.6rem 1rem;
     border-radius: 8px 8px 0 0;
     background-color: var(--color-surface-raised);
 }

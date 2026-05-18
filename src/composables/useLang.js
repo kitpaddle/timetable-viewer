@@ -1,6 +1,11 @@
 import { ref, computed } from 'vue'
 
-const lang = ref(localStorage.getItem('lang') || 'sv')
+function defaultLang() {
+    const stored = localStorage.getItem('lang')
+    if (stored) return stored
+    return navigator.language?.toLowerCase().startsWith('sv') ? 'sv' : 'en'
+}
+const lang = ref(defaultLang())
 
 const strings = {
   sv: {
@@ -10,7 +15,9 @@ const strings = {
     locateMe:    'Hitta mig',
     locating:    'Söker…',
     locationErr: 'Plats ej tillgänglig',
-    noDepartures:'Inga avgångar kommande 2 tim',
+    noDepartures: 'Inga avgångar kommande 2 tim',
+    welcomeMain:  'Kom igång genom att trycka på knappen Hållplatser och välj de hållplatser du vill följa.',
+    welcomeSub:   'För mer information om funktionerna, tryck på ℹ-knappen uppe till vänster.',
   },
   en: {
     addStops:    'Add Stops',
@@ -19,7 +26,9 @@ const strings = {
     locateMe:    'Locate me',
     locating:    'Locating…',
     locationErr: 'Location unavailable',
-    noDepartures:'No departures in the next 2 hrs',
+    noDepartures: 'No departures in the next 2 hrs',
+    welcomeMain:  'Get started by pressing the Add Stops button and select the stations you want to see departure times for.',
+    welcomeSub:   'For more information about the features, click the ℹ button in the top left corner.',
   }
 }
 
