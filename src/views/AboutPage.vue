@@ -15,7 +15,7 @@ onMounted(async () => {
 })
 
 const content = computed(() => lang.value === 'sv' ? {
-    title: 'Om Avgångar.se',
+    title: 'Om Avgangar.se',
     intro: 'Gratis app för realtidsavgångar och tidtabeller för kollektivtrafik i Sverige. Inget konto behövs.',
     privacyLink: 'Vi sparar ingen persondata.',
     back: '← Tillbaka',
@@ -31,7 +31,7 @@ const content = computed(() => lang.value === 'sv' ? {
         { icon: '📲', title: 'Spara som app', text: 'iOS: tryck Dela → Lägg till på hemskärmen. Android: webbläsarmenyn → Lägg till på startskärmen.' },
     ]
 } : {
-    title: 'About Avgångar.se',
+    title: 'About Avgangar.se',
     intro: 'Free app for real-time departures and timetables for public transport across Sweden. No account needed.',
     privacyLink: 'We store no personal data.',
     back: '← Back',

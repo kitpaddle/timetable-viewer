@@ -1,6 +1,6 @@
 {
-  "name": "Avgångar.se",
-  "short_name": "Avgångar",
+  "name": "Avgangar.se",
+  "short_name": "Avgangar",
   "description": "Realtidsavgångar för kollektivtrafik i Sverige",
   "start_url": "/",
   "scope": "/",
