@@ -142,7 +142,7 @@ watch(refreshTrigger, async () => {
                     <span class="departure-line">{{ d.line }}</span>
                     <span class="departure-destination">{{ d.destination }}</span>
                     <div class="departure-time-container">
-                        <time class="departure-time" :class="{ dimmed: d.isRealtime }" :datetime="d.timeISO">{{ d.time }}</time>
+                        <time class="departure-time" :class="{ dimmed: d.isRealtime, ontime: d.hasRealtime && !d.isRealtime }" :datetime="d.timeISO">{{ d.time }}</time>
                         <span v-if="d.isRealtime" class="realtime-time">{{ d.realtimeTime }}</span>
                     </div>
                 </li>
@@ -226,7 +226,6 @@ watch(refreshTrigger, async () => {
 }
 
 .realtime-time {
-    font-weight: bold;
     color: var(--color-realtime);
 }
 
@@ -239,6 +238,10 @@ watch(refreshTrigger, async () => {
 .departure-time.dimmed {
     color: var(--color-text-faint);
     text-decoration: line-through;
+}
+
+.departure-time.ontime {
+    color: var(--color-realtime);
 }
 
 .no-departures {

@@ -30,7 +30,8 @@ function mapDeparture(d) {
     const tMode = transportModeMap[d.route?.transport_mode] || 'bus'
     const scheduledTime = toHHMM(d.scheduled)
     const realtimeTime  = toHHMM(d.realtime)
-    const isRealtime    = d.is_realtime === true && realtimeTime !== scheduledTime
+    const hasRealtime   = d.is_realtime === true
+    const isRealtime    = hasRealtime && realtimeTime !== scheduledTime
 
     return {
         id:           `${d.scheduled}-${d.route?.designation}-${d.route?.direction}`,
@@ -39,6 +40,7 @@ function mapDeparture(d) {
         time:         scheduledTime,
         timeISO:      d.scheduled,
         realtimeTime: isRealtime ? realtimeTime : null,
+        hasRealtime,
         isRealtime,
         canceled:     d.canceled || false,
         tMode
