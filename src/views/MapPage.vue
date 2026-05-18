@@ -70,9 +70,14 @@ onMounted(async () => {
             const [id, name, lat, lon, modeChar] = btn._stop
             addStation({ id, name, lat, lon, transportMode: MODE_EXPAND[modeChar] || 'other' })
 
-            // Adding class for animation
+            btn.textContent = t('stationAdded')
+            btn.disabled = true
             btn.classList.add('added')
-            setTimeout(() => btn.classList.remove('added'), 400)
+            setTimeout(() => {
+                btn.textContent = t('addStationBtn')
+                btn.disabled = false
+                btn.classList.remove('added')
+            }, 2500)
         }
     })
 
@@ -143,7 +148,7 @@ function renderPopup(s) {
     return `
     <div class="popup-card">
       <div class="popup-title">${s[1]}</div>
-      <button class="popup-btn">Add Station</button>
+      <button class="popup-btn">${t('addStationBtn')}</button>
       <div class="popup-id">Stop ID: ${s[0]}</div>
     </div>`
 }
@@ -289,8 +294,6 @@ function renderPopup(s) {
 
 .popup-btn.added {
     background-color: #22c55e !important;
-    /* success green */
-    animation: flash 0.4s ease;
 }
 
 @keyframes flash {

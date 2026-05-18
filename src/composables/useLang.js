@@ -16,6 +16,8 @@ const strings = {
     locating:    'Söker…',
     locationErr: 'Plats ej tillgänglig',
     noDepartures: 'Inga avgångar kommande 2 tim',
+    addStationBtn: 'Lägg till hållplats',
+    stationAdded:  'Hållplats sparad',
     welcomeMain:  'Kom igång genom att trycka på knappen Hållplatser och välj de hållplatser du vill följa.',
     welcomeSub:   'För mer information om funktionerna, tryck på ℹ-knappen uppe till vänster.',
   },
@@ -27,6 +29,8 @@ const strings = {
     locating:    'Locating…',
     locationErr: 'Location unavailable',
     noDepartures: 'No departures in the next 2 hrs',
+    addStationBtn: 'Add stop',
+    stationAdded:  'Stop added',
     welcomeMain:  'Get started by pressing the Add Stops button and select the stations you want to see departure times for.',
     welcomeSub:   'For more information about the features, click the ℹ button in the top left corner.',
   }
