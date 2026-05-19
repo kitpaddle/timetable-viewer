@@ -37,12 +37,17 @@ const uniqueLines = computed(() => {
     return [...new Set(modeFiltered.value.map(d => d.line))].sort()
 })
 
-// Sorted destination list per line, derived from actual departure data
+// For metro use platform as direction key (platform 1 vs 2), otherwise destination
+function dirKey(d) {
+    return (d.tMode === 'metro' && d.platform) ? d.platform : d.destination
+}
+
+// Sorted direction-key list per line, derived from actual departure data
 const lineDirections = computed(() => {
     const map = new Map()
     for (const d of modeFiltered.value) {
         if (!map.has(d.line)) map.set(d.line, new Set())
-        map.get(d.line).add(d.destination)
+        map.get(d.line).add(dirKey(d))
     }
     const sorted = new Map()
     for (const [line, dirs] of map) sorted.set(line, [...dirs].sort())
@@ -54,9 +59,8 @@ const filteredDepartures = computed(() => {
         const state = lineStates.value[d.line]
         if (state === 'hidden') return false
         if (!state) return true
-        // state is a destination string — only filter if it's a known destination
         const dirs = lineDirections.value.get(d.line) || []
-        return !dirs.includes(state) || d.destination === state
+        return !dirs.includes(state) || dirKey(d) === state
     }).slice(0, props.maxRows)
 })
 
@@ -64,15 +68,14 @@ function toggleLine(line) {
     const dirs = lineDirections.value.get(line) || []
     const current = lineStates.value[line]  // undefined = show all
     let next
-    if (dirs.length >= 2) {
-        // Cycle: all → dest[0] → dest[1] → ... → hidden → all
+    if (dirs.length === 2) {
+        // Cycle: all → dest[0] → dest[1] → hidden → all
         if (!current) {
             next = dirs[0]
         } else if (current === 'hidden') {
             next = undefined
         } else {
-            const idx = dirs.indexOf(current)
-            next = (idx === -1 || idx === dirs.length - 1) ? 'hidden' : dirs[idx + 1]
+            next = current === dirs[0] ? dirs[1] : 'hidden'
         }
     } else {
         next = current === 'hidden' ? undefined : 'hidden'
@@ -83,9 +86,8 @@ function toggleLine(line) {
 function lineButtonLabel(line) {
     const dirs = lineDirections.value.get(line) || []
     const state = lineStates.value[line]
-    if (!state || state === 'hidden' || dirs.length <= 1) return line
-    if (dirs.length === 2) return state === dirs[0] ? `${line} ↑` : `${line} ↓`
-    return `${line} ${state.slice(0, 4).trimEnd()}`
+    if (!state || state === 'hidden' || dirs.length !== 2) return line
+    return state === dirs[0] ? `${line} ↑` : `${line} ↓`
 }
 
 

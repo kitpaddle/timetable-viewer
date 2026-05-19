@@ -37,6 +37,7 @@ function mapDeparture(d) {
         id:           `${d.scheduled}-${d.route?.designation}-${d.route?.direction}`,
         line:         sanitizeLine(d.route?.designation || d.route?.name || '?'),
         destination:  d.route?.direction || d.route?.destination?.name || '',
+        platform:     d.scheduled_platform?.designation || null,
         time:         scheduledTime,
         timeISO:      d.scheduled,
         realtimeTime: isRealtime ? realtimeTime : null,
