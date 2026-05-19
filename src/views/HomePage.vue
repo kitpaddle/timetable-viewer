@@ -14,6 +14,8 @@ const { t } = useLang()
         <main class="grid-wrapper">
             <div v-if="stations.length === 0" class="welcome">
                 <p class="welcome-main">{{ t('welcomeMain') }}</p>
+                <p class="welcome-main">{{ t('welcomeStep2') }}</p>
+                <p class="welcome-main">{{ t('welcomeStep3') }}</p>
                 <p class="welcome-sub">{{ t('welcomeSub') }}</p>
             </div>
             <TransitionGroup v-else name="card" tag="div" :class="['card-grid', stations.length <= 2 ? 'few-cards' : stations.length === 3 ? 'three-cards' : '']">
