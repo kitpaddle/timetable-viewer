@@ -293,7 +293,6 @@ onMounted(() => {
   }
 
   .nav-toggle {
-    border-radius: 0;
     padding-top: 0;
     padding-bottom: 0;
   }
