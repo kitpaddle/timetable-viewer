@@ -51,36 +51,41 @@ const lineDirections = computed(() => {
 
 const filteredDepartures = computed(() => {
     return modeFiltered.value.filter(d => {
-        const state = lineStates.value[d.line] || 'both'
+        const state = lineStates.value[d.line]
         if (state === 'hidden') return false
-        if (state === 'both') return true
+        if (!state) return true
+        // state is a destination string — only filter if it's a known destination
         const dirs = lineDirections.value.get(d.line) || []
-        if (state === 'dir0') return d.destination === dirs[0]
-        if (state === 'dir1') return d.destination === dirs[1]
-        return true
+        return !dirs.includes(state) || d.destination === state
     }).slice(0, props.maxRows)
 })
 
 function toggleLine(line) {
     const dirs = lineDirections.value.get(line) || []
-    const current = lineStates.value[line] || 'both'
+    const current = lineStates.value[line]  // undefined = show all
     let next
-    if (dirs.length === 2) {
-        const cycle = { both: 'dir0', dir0: 'dir1', dir1: 'hidden', hidden: 'both' }
-        next = cycle[current] ?? 'both'
+    if (dirs.length >= 2) {
+        // Cycle: all → dest[0] → dest[1] → ... → hidden → all
+        if (!current) {
+            next = dirs[0]
+        } else if (current === 'hidden') {
+            next = undefined
+        } else {
+            const idx = dirs.indexOf(current)
+            next = (idx === -1 || idx === dirs.length - 1) ? 'hidden' : dirs[idx + 1]
+        }
     } else {
-        next = current === 'hidden' ? 'both' : 'hidden'
+        next = current === 'hidden' ? undefined : 'hidden'
     }
     lineStates.value = { ...lineStates.value, [line]: next }
 }
 
 function lineButtonLabel(line) {
     const dirs = lineDirections.value.get(line) || []
-    const state = lineStates.value[line] || 'both'
-    if (dirs.length !== 2) return line
-    if (state === 'dir0') return `${line} ↑`
-    if (state === 'dir1') return `${line} ↓`
-    return line
+    const state = lineStates.value[line]
+    if (!state || state === 'hidden' || dirs.length <= 1) return line
+    if (dirs.length === 2) return state === dirs[0] ? `${line} ↑` : `${line} ↓`
+    return `${line} ${state.slice(0, 4).trimEnd()}`
 }
 
 
@@ -150,7 +155,7 @@ watch(refreshTrigger, async () => {
                     <div ref="lineWrapperRef" class="line-toggle-wrapper" :class="{ expanded: showAllLines }">
                         <div class="line-toggles">
                             <button v-for="line in uniqueLines" :key="line" @click="toggleLine(line)"
-                                :class="{ active: (lineStates[line] || 'both') !== 'hidden' }">
+                                :class="{ active: lineStates[line] !== 'hidden' }">
                                 {{ lineButtonLabel(line) }}
                             </button>
                         </div>
