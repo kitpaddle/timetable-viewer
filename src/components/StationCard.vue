@@ -23,10 +23,10 @@ const showAllLines = ref(false)
 const lineWrapperRef = ref(null)
 const overflowDetected = ref(false)
 
-const HIDDEN_LINES_KEY = `hiddenLines_${props.station.id}`
-const hiddenLines = ref(new Set(JSON.parse(localStorage.getItem(HIDDEN_LINES_KEY) || '[]')))
-watch(hiddenLines, val => {
-    localStorage.setItem(HIDDEN_LINES_KEY, JSON.stringify([...val]))
+const LINE_STATES_KEY = `lineStates_${props.station.id}`
+const lineStates = ref(JSON.parse(localStorage.getItem(LINE_STATES_KEY) || '{}'))
+watch(lineStates, val => {
+    localStorage.setItem(LINE_STATES_KEY, JSON.stringify(val))
 }, { deep: true })
 
 const { refreshTrigger } = useGlobalDepartures()
@@ -37,18 +37,50 @@ const uniqueLines = computed(() => {
     return [...new Set(modeFiltered.value.map(d => d.line))].sort()
 })
 
+// Sorted destination list per line, derived from actual departure data
+const lineDirections = computed(() => {
+    const map = new Map()
+    for (const d of modeFiltered.value) {
+        if (!map.has(d.line)) map.set(d.line, new Set())
+        map.get(d.line).add(d.destination)
+    }
+    const sorted = new Map()
+    for (const [line, dirs] of map) sorted.set(line, [...dirs].sort())
+    return sorted
+})
+
 const filteredDepartures = computed(() => {
-    return modeFiltered.value
-        .filter(d => !hiddenLines.value.has(d.line))
-        .slice(0, props.maxRows)
+    return modeFiltered.value.filter(d => {
+        const state = lineStates.value[d.line] || 'both'
+        if (state === 'hidden') return false
+        if (state === 'both') return true
+        const dirs = lineDirections.value.get(d.line) || []
+        if (state === 'dir0') return d.destination === dirs[0]
+        if (state === 'dir1') return d.destination === dirs[1]
+        return true
+    }).slice(0, props.maxRows)
 })
 
 function toggleLine(line) {
-    if (hiddenLines.value.has(line)) {
-        hiddenLines.value.delete(line)
+    const dirs = lineDirections.value.get(line) || []
+    const current = lineStates.value[line] || 'both'
+    let next
+    if (dirs.length === 2) {
+        const cycle = { both: 'dir0', dir0: 'dir1', dir1: 'hidden', hidden: 'both' }
+        next = cycle[current] ?? 'both'
     } else {
-        hiddenLines.value.add(line)
+        next = current === 'hidden' ? 'both' : 'hidden'
     }
+    lineStates.value = { ...lineStates.value, [line]: next }
+}
+
+function lineButtonLabel(line) {
+    const dirs = lineDirections.value.get(line) || []
+    const state = lineStates.value[line] || 'both'
+    if (dirs.length !== 2) return line
+    if (state === 'dir0') return `${line} ↑`
+    if (state === 'dir1') return `${line} ↓`
+    return line
 }
 
 
@@ -118,8 +150,8 @@ watch(refreshTrigger, async () => {
                     <div ref="lineWrapperRef" class="line-toggle-wrapper" :class="{ expanded: showAllLines }">
                         <div class="line-toggles">
                             <button v-for="line in uniqueLines" :key="line" @click="toggleLine(line)"
-                                :class="{ active: !hiddenLines.has(line) }">
-                                {{ line }}
+                                :class="{ active: (lineStates[line] || 'both') !== 'hidden' }">
+                                {{ lineButtonLabel(line) }}
                             </button>
                         </div>
 
@@ -137,7 +169,7 @@ watch(refreshTrigger, async () => {
             <p v-else-if="error" style="color:#b00">{{ error }}</p>
             <p v-else-if="filteredDepartures.length === 0" class="no-departures">{{ t('noDepartures') }}</p>
 
-            <TransitionGroup name="departure" tag="ul" class="departure-list" v-if="!loading && !error">
+            <ul class="departure-list" v-if="!loading && !error">
                 <li v-for="d in filteredDepartures" :key="d.id" class="departure-row">
                     <span class="departure-line">{{ d.line }}</span>
                     <span class="departure-destination">{{ d.destination }}</span>
@@ -146,7 +178,7 @@ watch(refreshTrigger, async () => {
                         <span v-if="d.isRealtime" class="realtime-time">{{ d.realtimeTime }}</span>
                     </div>
                 </li>
-            </TransitionGroup>
+            </ul>
         </div>
     </article>
 </template>  
@@ -159,6 +191,7 @@ watch(refreshTrigger, async () => {
   color: var(--color-text);
   display: flex;
   flex-direction: column;
+  contain: layout;
 }
 
 .station-card h2 {

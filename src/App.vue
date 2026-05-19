@@ -288,6 +288,14 @@ onMounted(() => {
     transform: none;
     flex: 1;
     justify-content: center;
+    align-self: stretch;
+    align-items: stretch;
+  }
+
+  .nav-toggle {
+    border-radius: 0;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }
 </style>
