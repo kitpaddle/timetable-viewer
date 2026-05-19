@@ -13,6 +13,7 @@ const { t } = useLang()
     <div class="grid-container">
         <main class="grid-wrapper">
             <div v-if="stations.length === 0" class="welcome">
+                <p class="welcome-hero">{{ t('welcomeHero') }}</p>
                 <p class="welcome-main">{{ t('welcomeMain') }}</p>
                 <p class="welcome-main">{{ t('welcomeStep2') }} {{ t('welcomeStep3') }}</p>
                 <p class="welcome-sub">{{ t('welcomeSub') }}</p>
@@ -35,6 +36,14 @@ const { t } = useLang()
     text-align: center;
     max-width: 420px;
     margin: 0 auto;
+}
+
+.welcome-hero {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.5;
+    margin: 0;
 }
 
 .welcome-main {
