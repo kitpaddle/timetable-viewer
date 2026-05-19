@@ -37,9 +37,9 @@ const uniqueLines = computed(() => {
     return [...new Set(modeFiltered.value.map(d => d.line))].sort()
 })
 
-// For metro use platform as direction key (platform 1 vs 2), otherwise destination
+// For metro/tram use platform as direction key, otherwise destination
 function dirKey(d) {
-    return (d.tMode === 'metro' && d.platform) ? d.platform : d.destination
+    return ((d.tMode === 'metro' || d.tMode === 'tram') && d.platform) ? d.platform : d.destination
 }
 
 // Sorted direction-key list per line, derived from actual departure data
