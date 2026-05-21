@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted } from 'vue'
 import { useStations } from '../composables/useStations'
 import StationCard from '../components/StationCard.vue'
 import { useDepartureLimit } from '../composables/useDepartureLimit'
@@ -6,7 +7,13 @@ import { useLang } from '../composables/useLang'
 
 const { stations } = useStations()
 const { currentLimit } = useDepartureLimit()
-const { t } = useLang()
+const { lang, t } = useLang()
+
+onMounted(() => {
+  document.title = lang.value === 'sv'
+    ? 'Avgångar – Realtidsavgångar för kollektivtrafik i Sverige'
+    : 'Avgangar.se – Real-time public transport departures in Sweden'
+})
 </script>
 
 <template>

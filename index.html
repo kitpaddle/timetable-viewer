@@ -4,37 +4,56 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Avgangar.se – Realtidsavgangar för kollektivtrafik i Sverige</title>
-    <meta name="description" content="Se realtidsavgångar och tidtabeller för bussar, tåg, tunnelbana och färjor i hela Sverige. Välj dina hållplatser och se nästa avgångar direkt." />
-    <meta name="keywords" content="avgångar, realtid, kollektivtrafik, buss, tåg, tunnelbana, spårvagn, färja, hållplatser, Sverige, tidtabell" />
+    <title>Avgångar – Realtidsavgångar för kollektivtrafik i Sverige</title>
+    <meta name="description" content="Avgångar.se – se realtidsavgångar och tidtabeller för bussar, tåg, tunnelbana och färjor i hela Sverige. Välj dina hållplatser och se nästa avgångar direkt." />
+    <meta name="keywords" content="avgångar, realtidsavgångar, kollektivtrafik, buss, tåg, tunnelbana, spårvagn, färja, hållplatser, Sverige, tidtabell, avgangar" />
     <meta name="robots" content="index, follow" />
     <meta name="google-site-verification" content="B4diV3NAWDwbUaDqwyLknWPpN-dBW1gfs2cFOFVlBqY" />
     <link rel="canonical" href="https://avgangar.se/" />
 
+    <!-- Language alternates -->
+    <link rel="alternate" hreflang="sv" href="https://avgangar.se/" />
+    <link rel="alternate" hreflang="en" href="https://avgangar.se/" />
+    <link rel="alternate" hreflang="x-default" href="https://avgangar.se/" />
+
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://avgangar.se/" />
-    <meta property="og:title" content="Avgangar.se – Realtidsavgangar för kollektivtrafik i Sverige" />
-    <meta property="og:description" content="Se realtidsavgångar och tidtabeller för bussar, tåg, tunnelbana och färjor i hela Sverige. Välj dina hållplatser och se nästa avgångar direkt." />
+    <meta property="og:title" content="Avgångar – Realtidsavgångar för kollektivtrafik i Sverige" />
+    <meta property="og:description" content="Avgångar.se – se realtidsavgångar och tidtabeller för bussar, tåg, tunnelbana och färjor i hela Sverige. Välj dina hållplatser och se nästa avgångar direkt." />
+    <meta property="og:image" content="https://avgangar.se/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="sv_SE" />
     <meta property="og:site_name" content="Avgangar.se" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Avgangar.se – Realtidsavgangar för kollektivtrafik i Sverige" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Avgångar – Realtidsavgångar för kollektivtrafik i Sverige" />
     <meta name="twitter:description" content="Se realtidsavgångar och tidtabeller för bussar, tåg, tunnelbana och färjor i hela Sverige." />
+    <meta name="twitter:image" content="https://avgangar.se/og-image.png" />
 
     <!-- JSON-LD structured data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
+      "@type": ["WebApplication", "SoftwareApplication"],
       "name": "Avgangar.se",
       "url": "https://avgangar.se/",
-      "description": "Realtidsavgangar och tidtabeller för kollektivtrafik i Sverige",
+      "description": "Realtidsavgångar och tidtabeller för kollektivtrafik i Sverige",
       "applicationCategory": "TravelApplication",
       "operatingSystem": "Any",
       "inLanguage": "sv-SE",
+      "keywords": "avgångar, realtidsavgångar, kollektivtrafik, buss, tåg, tunnelbana, spårvagn, färja, Sverige",
+      "areaServed": {
+        "@type": "Country",
+        "name": "Sweden"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Avgangar.se",
+        "url": "https://avgangar.se/"
+      },
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -53,9 +72,29 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Avgangar" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+
+    <!-- GitHub Pages SPA: restore path encoded by 404.html -->
+    <script>
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function (s) {
+            return s.replace(/~and~/g, '&')
+          })
+          window.history.replaceState(
+            null, null,
+            decoded.shift() + (decoded.length ? '?' + decoded.join('&') : '') + l.hash
+          )
+        }
+      }(window.location))
+    </script>
   </head>
   <body>
     <div id="app"></div>
+    <noscript>
+      <p>Avgångar.se – Gratis realtidsavgångar och tidtabeller för kollektivtrafik i Sverige.
+      Se nästa avgångar för bussar, tåg, tunnelbana, spårvagn och färjor på valfria hållplatser.
+      Inget konto behövs.</p>
+    </noscript>
     <script type="module" src="/src/main.js"></script>
     <script>
       if ('serviceWorker' in navigator) {

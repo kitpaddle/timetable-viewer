@@ -8,6 +8,9 @@ const { lang } = useLang()
 const stopCount = ref('69 000')
 
 onMounted(async () => {
+    document.title = lang.value === 'sv'
+        ? 'Om Avgangar.se – Realtidsavgångar för kollektivtrafik i Sverige'
+        : 'About Avgangar.se – Real-time public transport departures in Sweden'
     try {
         const meta = await fetch('/stops-meta.json').then(r => r.json())
         stopCount.value = meta.count.toLocaleString(lang.value === 'sv' ? 'sv-SE' : 'en-GB')

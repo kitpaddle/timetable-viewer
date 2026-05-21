@@ -1,7 +1,13 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useLang } from '../composables/useLang'
 const { lang } = useLang()
+
+onMounted(() => {
+    document.title = lang.value === 'sv'
+        ? 'Integritetspolicy – Avgangar.se'
+        : 'Privacy Policy – Avgangar.se'
+})
 
 const content = computed(() => lang.value === 'sv' ? {
     title: 'Integritetspolicy',
