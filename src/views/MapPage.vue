@@ -184,8 +184,8 @@ function makeIcon(svg, color = '#2563eb', bg = '#fff') {
     return L.divIcon({
         html: `<div class="map-icon" style="color:${color}; background:${bg}">${svg}</div>`,
         className: '',
-        iconSize: [30, 30],
-        iconAnchor: [15, 30]
+        iconSize: [32, 32],
+        iconAnchor: [16, 32]
     })
 }
 
@@ -371,21 +371,20 @@ function renderPopup(s) {
 }
 
 .map-icon {
-    width: 30x;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    /* ← makes it round */
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
 }
 
 .map-icon svg {
-    width: 20px;
-    height: 20px;
-    stroke-width: 2;
-    /* optional halo */
-    filter: drop-shadow(0 0 1px #fff);
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.5;
 }
 
 .popup-card {
