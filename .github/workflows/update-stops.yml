@@ -61,6 +61,8 @@ jobs:
 
       - name: Build app
         if: steps.diff.outputs.changed == 'true'
+        env:
+          VITE_REALTIME_API_KEY: ${{ secrets.VITE_REALTIME_API_KEY }}
         run: npm run build
 
       - name: Deploy to GitHub Pages
