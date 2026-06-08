@@ -359,6 +359,15 @@ function renderPopup(s) {
     background: #f0f0f0;
 }
 
+@media (max-width: 600px) {
+    .locate-btn {
+        top: 56px;
+        left: auto;
+        right: 10px;
+        transform: none;
+    }
+}
+
 .locate-btn.locating {
     color: #888;
     cursor: default;

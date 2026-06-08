@@ -20,6 +20,7 @@ const departures = ref([])
 const loading = ref(true)
 const error = ref(null)
 const showAllLines = ref(false)
+const collapsed = ref(false)
 const lineWrapperRef = ref(null)
 const overflowDetected = ref(false)
 
@@ -93,6 +94,10 @@ function lineButtonLabel(line) {
 
 function toggleLineWrap() {
     showAllLines.value = !showAllLines.value
+}
+
+function toggleCollapsed() {
+    collapsed.value = !collapsed.value
 }
 
 function checkOverflow() {
@@ -171,21 +176,27 @@ watch(refreshTrigger, async () => {
             </div>
             <button class="close-btn" @click="remove">✕</button>
         </header>
-        <div class="list-container">
-<p v-if="loading">Loading…</p>
-            <p v-else-if="error" style="color:#b00">{{ error }}</p>
-            <p v-else-if="filteredDepartures.length === 0" class="no-departures">{{ t('noDepartures') }}</p>
+        <div class="list-container" :class="{ collapsed }">
+            <template v-if="!collapsed">
+                <p v-if="loading">Loading…</p>
+                <p v-else-if="error" style="color:#b00">{{ error }}</p>
+                <p v-else-if="filteredDepartures.length === 0" class="no-departures">{{ t('noDepartures') }}</p>
 
-            <ul class="departure-list" v-if="!loading && !error">
-                <li v-for="d in filteredDepartures" :key="d.id" class="departure-row">
-                    <span class="departure-line">{{ d.line }}</span>
-                    <span class="departure-destination">{{ d.destination }}</span>
-                    <div class="departure-time-container">
-                        <time class="departure-time" :class="{ dimmed: d.isRealtime, ontime: d.hasRealtime && !d.isRealtime }" :datetime="d.timeISO">{{ d.time }}</time>
-                        <span v-if="d.isRealtime" class="realtime-time">{{ d.realtimeTime }}</span>
-                    </div>
-                </li>
-            </ul>
+                <ul class="departure-list" v-if="!loading && !error">
+                    <li v-for="d in filteredDepartures" :key="d.id" class="departure-row">
+                        <span class="departure-line">{{ d.line }}</span>
+                        <span class="departure-destination">{{ d.destination }}</span>
+                        <div class="departure-time-container">
+                            <time class="departure-time" :class="{ dimmed: d.isRealtime, ontime: d.hasRealtime && !d.isRealtime }" :datetime="d.timeISO">{{ d.time }}</time>
+                            <span v-if="d.isRealtime" class="realtime-time">{{ d.realtimeTime }}</span>
+                        </div>
+                    </li>
+                </ul>
+            </template>
+
+            <button class="collapse-toggle-btn" @click="toggleCollapsed">
+                <span class="collapse-arrow">{{ collapsed ? '▼' : '▲' }}</span>
+            </button>
         </div>
     </article>
 </template>  
@@ -207,11 +218,15 @@ watch(refreshTrigger, async () => {
 }
 
 .list-container {
-    padding: 1rem;
+    padding: 1rem 1rem 0;
     background-color: var(--color-surface);
     margin: 0;
     border-radius: 0 0 8px 8px;
     transition: none;
+}
+
+.list-container.collapsed {
+    padding-top: 0.1rem;
 }
 
 .departure-list {
@@ -399,6 +414,28 @@ watch(refreshTrigger, async () => {
 
 .expand-toggle-btn:hover {
     color: var(--color-text);
+}
+
+.collapse-toggle-btn {
+    display: block;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    line-height: 1;
+    cursor: pointer;
+    margin: 0.15rem auto 0;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.collapse-toggle-btn:hover {
+    color: var(--color-text);
+}
+
+.collapse-arrow {
+    display: inline-block;
+    transform: scaleY(0.5);
 }
 
 .line-toggles button {
