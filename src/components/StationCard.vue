@@ -20,7 +20,6 @@ const departures = ref([])
 const loading = ref(true)
 const error = ref(null)
 const showAllLines = ref(false)
-const collapsed = ref(false)
 const lineWrapperRef = ref(null)
 const overflowDetected = ref(false)
 
@@ -29,6 +28,12 @@ const lineStates = ref(JSON.parse(localStorage.getItem(LINE_STATES_KEY) || '{}')
 watch(lineStates, val => {
     localStorage.setItem(LINE_STATES_KEY, JSON.stringify(val))
 }, { deep: true })
+
+const COLLAPSED_KEY = `cardCollapsed_${props.station.id}`
+const collapsed = ref(localStorage.getItem(COLLAPSED_KEY) === 'true')
+watch(collapsed, val => {
+    localStorage.setItem(COLLAPSED_KEY, val)
+})
 
 const { refreshTrigger } = useGlobalDepartures()
 
